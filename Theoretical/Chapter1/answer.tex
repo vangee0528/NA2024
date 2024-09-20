@@ -1,66 +1,220 @@
 \documentclass[a4paper]{article}
 \usepackage[affil-it]{authblk}
-\usepackage[backend=bibtex,style=numeric]{biblatex}
-
+%\usepackage[backend=bibtex,style=numeric]{biblatex}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{geometry}
 \geometry{margin=1.5cm, vmargin={0pt,1cm}}
 \setlength{\topmargin}{-1cm}
 \setlength{\paperheight}{29.7cm}
 \setlength{\textheight}{25.3cm}
 
-\addbibresource{citation.bib}
+%\addbibresource{citation.bib}
 
 \begin{document}
 % =================================================
-\title{Numerical Analysis homework  1}
+\title{Numerical Analysis Homework 1}
 
 \author{Chen Wanqi 3220102895
   \thanks{Electronic address: \texttt{3220102895@zju.edu.cn}}}
 \affil{Information and Computer Science 2201, Zhejiang University }
 
-
 \date{Due time: \today}
 
 \maketitle
 
-
-
-
-
 % ============================================
-\section*{I.  Consider the bisection method starting with the initial interval [1.5, 3.5]. }
+\section*{I. Consider the bisection method starting with the initial interval [1.5, 3.5].}
 
-\subsection*{I-a. }
+\subsection*{I-a.}
 \textbf{Width of the interval at the nth step}
 
 The bisection method halves the interval at each step.
 
-For the interval $[1.5, 3.5]$, the initial width is $ 3.5 - 1.5 = 2 $. Therefore, the width at the $n$-th step is :  $W_n = \frac{2}{2^n} = \frac{1}{2^{n-1}}$
-   
+For the interval $[1.5, 3.5]$, the initial width is $3.5 - 1.5 = 2$. Therefore, the width at the $n$-th step is: 
+\[
+W_n = \frac{2}{2^n} = \frac{1}{2^{n-1}}
+\]
 
 \subsection*{I-b.}
 \textbf{Supremum of the distance between the root $r$ and the midpoint of the interval}
 
-The distance between the root $r$ and the midpoint of the interval after $n$ steps, denoted as 
-$D_n$, is always less than or equal to half the width of the interval. 
+The distance between the root $r$ and the midpoint of the interval after $n$ steps, denoted as $D_n$, is always less than or equal to half the width of the interval. In the case of the interval $[1.5, 3.5]$, this becomes:
+\[
+D_n = \frac{2}{2^{n+1}} = \frac{1}{2^n}
+\]
 
-In the case of the interval $[1.5, 3.5]$, this becomes:  $D_n = \frac{2}{2^{n+1}} = \frac{1}{2^n}$
+\section*{II. Proof of accuracy with relative error $\epsilon$}
+
+\textbf{We want to determine the number of steps $n$ such that the relative error of the approximation to the root is no greater than $\epsilon$. Specifically, we need to show that this goal is achieved if:}
+\[
+n \geq \frac{\log(b_0 - a_0) - \log(\epsilon) - \log(a_0)}{\log(2)} - 1
+\]
+
+\subsection*{Proof:}
+
+   In the bisection method, the width of the interval after $n$ steps is given by:
+   \[
+   W_n = \frac{b_0 - a_0}{2^n}
+   \]
+   This width bounds the absolute error of the root approximation. The midpoint of the interval is the best approximation of the root, and the error in this approximation is at most half the interval width:
+   \[
+   \text{E}_n = \frac{W_n}{2} = \frac{b_0 - a_0}{2^{n+1}}
+   \]
+
+
+   To achieve a relative error no greater than $\epsilon$, the following condition must hold:
+   \[
+   \frac{\text{E}_n}{r} \leq \epsilon
+   \]
+   Since the root $r$ lies in the interval $[a_0, b_0]$, and $r \geq a_0$, we have:
+   \[
+   \frac{\frac{b_0 - a_0}{2^{n+1}}}{a_0} \leq \epsilon
+   \]
+   Simplifying this:
+   \[
+   \frac{b_0 - a_0}{2^{n+1} a_0} \leq \epsilon
+   \]
    
-\section*{II. Briefly repeat the problem}
 
-Give your answers here.
+Multiplying both sides by $2^{n+1} a_0$:
+   \[
+   b_0 - a_0 \leq 2^{n+1} \epsilon a_0
+   \]
+   Taking the logarithm of both sides:
+   \[
+   \log(b_0 - a_0) \leq \log(2^{n+1} \epsilon a_0)
+   \]
+   Using logarithm properties:
+   \[
+   \log(b_0 - a_0) \leq (n+1) \log(2) + \log(\epsilon) + \log(a_0)
+   \]
+   Rearranging to solve for $n$:
+   \[
+   n+1 \geq \frac{\log(b_0 - a_0) - \log(\epsilon) - \log(a_0)}{\log(2)}
+   \]
+   Subtracting 1 from both sides gives:
+   \[
+   n \geq \frac{\log(b_0 - a_0) - \log(\epsilon) - \log(a_0)}{\log(2)} - 1
+   \]
 
 
+   Thus, the number of steps $n \geq \frac{\log(b_0 - a_0) - \log(\epsilon) - \log(a_0)}{\log(2)} - 1$ guarantees that the relative error in the root approximation is no greater than $\epsilon$. 
+
+\section*{III. Perform four iterations of Newton’s method for the polynomial equation }
+The polynomial equation is $p(x) = 4x^3 - 2x^2 + 3 = 0$ with the starting point $x_0 = -1$.
+
+Newton's method is defined by the iterative formula:
+\[
+x_{n+1} = x_n - \frac{p(x_n)}{p'(x_n)}
+\]
+
+\subsection*{}
+Given the polynomial \( p(x) = 4x^3 - 2x^2 + 3 \), its derivative is:
+\[
+p'(x) = 12x^2 - 4x
+\]
+
+Starting with \( x_0 = -1 \), we apply the Newton's method formula for four iterations:
+
+\[
+x_{n+1} = x_n - \frac{4x_n^3 - 2x_n^2 + 3}{12x_n^2 - 4x_n}
+\]
+
+The iterations are organized in the following table:
+
+\[
+\begin{array}{|c|c|c|c|}
+\hline
+n & x_n & p(x_n) & p'(x_n) \\
+\hline
+0&-1.00000&-3.00000&16.00000\\
+1&-0.81250&-0.46582&11.17188\\
+2&-0.77080&-0.02014&10.21289\\
+3&-0.76883&-0.00004&10.16857\\
+4&-0.76883&-0.00000&10.16847\\
+\hline
+\end{array}
+\]
+
+\section*{IV. Consider a variation of Newton’s method}
+
+In this variation of Newton’s method, only the derivative at \( x_0 \) is used for all iterations. The update rule is given by:
+
+\[
+x_{n+1} = x_n - \frac{f(x_n)}{f'(x_0)}
+\]
+
+Let \( \alpha \) be the true root of the function \( f(x) \). The error at step \( n \) is defined as:
+
+\[
+e_n = x_n - \alpha
+\]
+
+To analyze the convergence behavior of this method, we aim to find constants \( C \) and \( s \) such that:
+
+\[
+e_{n+1} = C e_n^s
+\]
+
+where \( e_{n+1} \) is the error at step \( n+1 \), \( s \) is a constant, and \( C \) may depend on \( x_n \), the true root \( \alpha \), and the derivative of \( f(x) \).
+
+\subsection*{Solve:}
+Assume \( f(x) \) is sufficiently smooth and can be expanded in a Taylor series around \( \alpha \). Thus, for \( x_n \) near \( \alpha \), we can write:
+
+\[
+f(x_n) = f(\alpha) + f'(\alpha)(x_n - \alpha) + \frac{f''(\alpha)}{2}(x_n - \alpha)^2 + O((x_n - \alpha)^3)
+\]
+
+Since \( \alpha \) is the true root, we know that \( f(\alpha) = 0 \), so this simplifies to:
+
+\[
+f(x_n) = f'(\alpha)(x_n - \alpha) + \frac{f''(\alpha)}{2}(x_n - \alpha)^2 + O((x_n - \alpha)^3)
+\]
+
+
+Using the modified Newton’s method iteration rule:
+
+\[
+x_{n+1} = x_n - \frac{f(x_n)}{f'(x_0)}
+\]
+
+Substitute the Taylor expansion of \( f(x_n) \):
+
+\[
+x_{n+1} = x_n - \frac{f'(\alpha)(x_n - \alpha) + \frac{f''(\alpha)}{2}(x_n - \alpha)^2+ O(x_n - \alpha)^3}{f'(x_0)}
+\]
+
+Let \( e_n = x_n - \alpha \). Then the update equation becomes:
+
+\[
+e_{n+1} = e_n - \frac{f'(\alpha)e_n + \frac{f''(\alpha)}{2}e_n^2+ O(e_n)^3}{f'(x_0)}
+\]
+
+
+For small \( e_n \), the quadratic term \( e_n^2 \) dominates. Therefore, the error at step \( n+1 \) can be approximated by:
+
+\[
+e_{n+1} \approx - \frac{f''(\alpha)}{2 f'(x_0)} e_n^2
+\]
+
+This shows that the error follows a quadratic convergence pattern, with:
+
+\[
+e_{n+1} = C e_n^2
+\]
+
+where \( C = - \frac{f''(\alpha)}{2 f'(x_0)} \).
 
 
 
 % ===============================================
 \section*{ \center{\normalsize {Acknowledgement}} }
-Give your acknowledgements here(if any).
 
+I would like to express my gratitude to my course instructor for their guidance and the resources provided during the course.
 
-\printbibliography
+%\printbibliography
 
-If you are not familiar with \texttt{bibtex}, 
 it is acceptable to put a table here for your references.
 \end{document}
