@@ -1,0 +1,66 @@
+\documentclass[a4paper]{article}
+\usepackage[affil-it]{authblk}
+\usepackage[backend=bibtex,style=numeric]{biblatex}
+
+\usepackage{geometry}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+
+\addbibresource{citation.bib}
+
+\begin{document}
+% =================================================
+\title{Numerical Analysis homework  1}
+
+\author{Chen Wanqi 3220102895
+  \thanks{Electronic address: \texttt{3220102895@zju.edu.cn}}}
+\affil{Information and Computer Science 2201, Zhejiang University }
+
+
+\date{Due time: \today}
+
+\maketitle
+
+
+
+
+
+% ============================================
+\section*{I.  Consider the bisection method starting with the initial interval [1.5, 3.5]. }
+
+\subsection*{I-a. }
+\textbf{Width of the interval at the nth step}
+
+The bisection method halves the interval at each step.
+
+For the interval $[1.5, 3.5]$, the initial width is $ 3.5 - 1.5 = 2 $. Therefore, the width at the $n$-th step is :  $W_n = \frac{2}{2^n} = \frac{1}{2^{n-1}}$
+   
+
+\subsection*{I-b.}
+\textbf{Supremum of the distance between the root $r$ and the midpoint of the interval}
+
+The distance between the root $r$ and the midpoint of the interval after $n$ steps, denoted as 
+$D_n$, is always less than or equal to half the width of the interval. 
+
+In the case of the interval $[1.5, 3.5]$, this becomes:  $D_n = \frac{2}{2^{n+1}} = \frac{1}{2^n}$
+   
+\section*{II. Briefly repeat the problem}
+
+Give your answers here.
+
+
+
+
+
+% ===============================================
+\section*{ \center{\normalsize {Acknowledgement}} }
+Give your acknowledgements here(if any).
+
+
+\printbibliography
+
+If you are not familiar with \texttt{bibtex}, 
+it is acceptable to put a table here for your references.
+\end{document}
