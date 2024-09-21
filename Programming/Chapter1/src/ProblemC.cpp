@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include <stdexcept>
-#include "Function.hpp"          // 引入 Function 虚类
-#include "EquationSolver.hpp"    // 引入 EquationSolver 虚类
+#include "Function.hpp"          
+#include "EquationSolver.hpp"   
 
 class Function2 : public Function {
 public:
@@ -29,7 +29,7 @@ void checkRoot(const Function &f, double root) {
 int main() {
     try {
         Function2 f2;
-        std::cout << "--------------------------------" << std::endl << std::endl;
+        std::cout << "-----------PROBLEM C---------------" << std::endl << std::endl;
 
         // 寻找接近 4.5 的根
         std::cout << "Testing f(x) = x - tan(x) near 4.5:" << std::endl;

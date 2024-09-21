@@ -2,7 +2,8 @@
 \usepackage[affil-it]{authblk}
 \usepackage{amsthm,amsmath,amssymb}
 \usepackage{geometry}
-\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}  % To force image positioning with [H]
 
 \geometry{margin=1.5cm, vmargin={0pt,1cm}}
 \setlength{\topmargin}{-1cm}
@@ -10,48 +11,102 @@
 \setlength{\textheight}{25.3cm}
 \newcommand{\QED}{\hfill\ensuremath{\square}}
 
-
 \begin{document}
+
 % =================================================
-\title{Numerical Analysis Programming Report  1}
+\title{Numerical Analysis Programming Report 1}
 
 \author{Chen Wanqi 3220102895
   \thanks{Electronic address: \texttt{3220102895@zju.edu.cn}}}
-\affil{Information and Computer Science 2201, Zhejiang University }
-
+\affil{Information and Computer Science 2201, Zhejiang University}
 
 \date{\today}
 
 \maketitle
 
+% ===============================================
+\section{Problem A: Method Implementations}
 
-% =============================================== 
-\section*{I. Consider the bisection method starting with the initial interval [1.5, 3.5]. }
+In \textbf{Problem A}, we are required to implement three methods—bisection, Newton's, and secant—in a C++ package. The task involves:
 
-\textbf{Solution:}
+\begin{itemize}
+    \item Designing an abstract base class \texttt{EquationSolver} with a pure virtual method \texttt{solve}.
+    \item Creating a derived class for each method that conforms to solving nonlinear equations in its specific way.
+\end{itemize}
 
-The bisection method halves the interval at each step.
+We start by writing \texttt{Function.hpp}, which includes a virtual class \texttt{Function}. The class defines the \texttt{operator()} to compute function values and a default \texttt{derivative()} function using finite differences. If a more accurate derivative is available, the \texttt{derivative()} function can be overridden.
 
-For the interval $[1.5, 3.5]$, the initial width is $3.5 - 1.5 = 2$. Therefore, the width at the $n$-th step is: 
-\[
-W_n = \frac{2}{2^n} = \frac{1}{2^{n-1}}
-\]
+Then, we implemented \texttt{EquationSolver.hpp}, where we define the virtual class \texttt{EquationSolver}, containing a virtual \texttt{solve()} function.
 
-\subsection*{I-b. Supremum of the distance between the root $r$ and the midpoint of the interval}
+Based on this structure, we create three derived classes: \texttt{Bisection\_Method}, \texttt{NewtonSolver}, and \texttt{Secant\_Method}, each inheriting from \texttt{EquationSolver}. These classes implement their respective methods to solve nonlinear equations using bisection, Newton's, and secant methods.
 
-\textbf{Solution:}
+% =================================================
+\section{Problem B: Validating the Bisection Method}
 
-The distance between the root $r$ and the midpoint of the interval after $n$ steps, denoted as $D_n$, is always less than or equal to half the width of the interval. In the case of the interval $[1.5, 3.5]$, this becomes:
-\[
-D_n = \frac{2}{2^{n+1}} = \frac{1}{2^n}
-\]
+\textbf{Problem B} requires us to verify the correctness of the bisection solver. We wrote \texttt{ProblemB.cpp}, where we define four functions to be tested, each inheriting from \texttt{Function}. Additionally, we implemented the \texttt{checkRoot()} function to verify the correctness of the solutions. 
+
+In the main program, we input the four functions along with their interval endpoints, then call the bisection solver and print the results. 
+
+As shown in the output:
+\begin{itemize}
+    \item The first three functions return correct solutions.
+    \item The fourth function, which is discontinuous in the given interval, fails to find a solution within the maximum number of iterations, throwing an exception.
+\end{itemize}
+
+\begin{figure}[H]  % Use [H] to force the image position
+  \centering
+  \includegraphics[width=0.5\textwidth]{./picture/ProblemB.png}
+  \caption{Output for Problem B}
+\end{figure}
+
+% =================================================
+\section{Problem C: Validating Newton's Method}
+
+\textbf{Problem C} requires us to verify the correctness of the Newton solver. We wrote \texttt{ProblemC.cpp}, where we define the function to be tested, inheriting from \texttt{Function}, and override the derivative function. Additionally, we defined the \texttt{checkRoot()} function to verify the correctness of the root.
+
+In the main program, we input the function and two initial guesses, then call the Newton solver and print the results. 
+
+As shown in the output, Newton's method finds approximate solutions near both initial guesses.
+
+\begin{figure}[H]  % Use [H] to force the image position
+  \centering
+  \includegraphics[width=0.4\textwidth]{./picture/ProblemC.png}
+  \caption{Output for Problem C}
+\end{figure}
+
+% =================================================
+\section{Problem D: Validating the Secant Method}
+
+\textbf{Problem D} requires us to verify the correctness of the secant solver. We wrote \texttt{ProblemD.cpp}, where we define three functions to be tested, each inheriting from \texttt{Function}. We also defined the \texttt{checkRoot()} function to verify the correctness of the root.
+
+In the main program, we input the functions, two initial guesses (from the problem statement and our own settings), and call the secant solver, printing the results.
+
+As shown in the output, the secant method finds approximate solutions in all six cases. Different initial guesses may lead to different solutions since the secant method relies on two initial points to estimate the function's slope. Using different initial points can lead to the algorithm converging to different roots when multiple roots exist.
+
+\begin{figure}[H]  % Use [H] to force the image position
+  \centering
+  \includegraphics[width=0.5\textwidth]{./picture/ProblemD.png}
+  \caption{Output for Problem D}
+\end{figure}
+
+% =================================================
+\section{Problem E: Application of Solvers to a Real Problem}
+
+In \textbf{Problem E}, we apply the three solvers to solve a real-world problem. We first transform the given equation into the form $f(h) = 0$ (where $f(h) = -\arcsin(h) + 0.5 \cdot \pi - h \cdot \sqrt{1 - h^2} - 1.24$), then solve it using each of the three methods.
+
+The results show that all three methods converge to the same solution.
+
+\begin{figure}[H]  % Use [H] to force the image position
+  \centering
+  \includegraphics[width=0.5\textwidth]{./picture/ProblemE.png}
+  \caption{Output for Problem E}
+\end{figure}
 
 % =======================
 \section*{References}
 \begin{itemize}
    \item handoutsNumPDEs
-   \item ChatGPT, *AI Language Model*, OpenAI Platform, 2024.
+   \item ChatGPT, \textit{AI Language Model}, OpenAI Platform, 2024.
 \end{itemize}
-% ==============================================
 
 \end{document}

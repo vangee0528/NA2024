@@ -1,26 +1,26 @@
 #include <iostream>
 #include <cmath>
 #include <stdexcept>
-#include "Function.hpp"          // 引入 Function 虚类
-#include "EquationSolver.hpp"    // 引入 EquationSolver 虚类
+#include "Function.hpp"          
+#include "EquationSolver.hpp"    
 
-// 定义函数 f1
+// 函数 f1 = sin(x/2) - 1
 class f1 : public Function {
 public:
     virtual double operator() (double x) const override {
-        return sin(x / 2) - 1; // f(x) = sin(x/2) - 1
+        return sin(x / 2) - 1; 
     }
 };
 
-// 定义函数 f2
+// 函数 f2 = e^x - tan(x)
 class f2 : public Function {
 public:
     virtual double operator() (double x) const override {
-        return exp(x) - tan(x); // f(x) = e^x - tan(x)
+        return exp(x) - tan(x); 
     }
 };
 
-// 定义函数 f3
+// 函数 f3 = x^3 - 12x^2 + 3x + 1
 class f3 : public Function {
 public:
     virtual double operator() (double x) const override {
@@ -41,7 +41,7 @@ void checkRoot(const Function &f, double root) {
 
 int main() {
     try {
-        std::cout << "--------------------------------" << std::endl << std::endl;
+        std::cout << "-----------PROBLEM D---------------" << std::endl << std::endl;
 
         // 1. f(x) = sin(x/2) - 1
         {

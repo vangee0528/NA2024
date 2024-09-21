@@ -4,7 +4,7 @@
 #include <cmath>
 
 
-// 定义函数 f(x) = 1/x - tan(x)
+// 函数 f(x) = 1/x - tan(x)
 class Function1 : public Function {
 public:
     virtual double operator() (double x) const override {
@@ -54,7 +54,7 @@ void checkRoot(const Function &f, double root) {
 
 int main() {
 
-    std::cout << "--------------------------------" << std::endl << std::endl;
+    std::cout << "-----------PROBLEM B---------------" << std::endl << std::endl;
 
     // 测试函数1: f(x) = 1/x - tan(x) 在区间 [0, pi/2]
     {

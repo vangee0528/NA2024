@@ -18,9 +18,9 @@ public:
 // 二分法求解器类
 class Bisection_Method : public EquationSolver {
 private:
-    double a, b; // 区间端点
-    double eps, delta;// 收敛精度和区间精度
-    int Maxiter; // 最大迭代次数
+    double a, b;            // 区间端点
+    double eps, delta;      // 收敛精度和区间精度
+    int Maxiter;             // 最大迭代次数
 public:
     Bisection_Method(const Function &F, double a, double b, 
         double eps = 1e-7, double delta = 1e-7, int Maxiter = 1000) :
@@ -32,7 +32,8 @@ public:
 
         // 预处理：检查区间两端符号是否相反
         if (fa * fb > 0) {
-            throw std::runtime_error("Error: The function values at the endpoints of the interval must have opposite signs.");
+            std::cout << "\033[1;31mError: The function values at the endpoints of the interval must have opposite signs.\033[0m" << std::endl;
+            return NAN;
         }
 
 
@@ -43,19 +44,12 @@ public:
             c = (a + b) / 2;
             fc = F(c);
 
-            // // 当前区间小于delta或函数值接近0
-            // if (std::fabs(fc) < eps || (b - a) / 2 < delta) {
-            //     std::cout << "Converged after " << iter << " iterations." << std::endl;
-            //     return c;  // 找到近似根
-            // }
-
-            // 当前区间小于delta且函数值接近0
+            // 当前区间小于delta**且**函数值接近0
             if (std::fabs(fc) < eps && (b - a) / 2 < delta) { //为了获得更好的近似根，同时满足区间精度和收敛精度
                 std::cout << "Converged after " << i << " iterations." << std::endl;
-                return c;  // 找到近似根
+                return c;  // 返回近似根
             }
 
-            //选择下一步区间
             if (fa * fc < 0) {
                 b = c;
                 fb = fc;
@@ -65,6 +59,7 @@ public:
             }
 
         }
+        // 超过最大迭代次数
         std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
         return NAN;
 
@@ -92,7 +87,7 @@ public:
             dfx = F.derivative(x);  
             if (std::fabs(fx) < eps) {
                 std::cout << "Converged after " << i << " iterations." << std::endl;
-                return x;  // 如果已经满足精度要求，返回根
+                return x;  // 找到近似根
             }
             if (dfx == 0) throw std::runtime_error("Error: Derivative is zero."); // 防止除零
             x = x - fx / dfx;  
@@ -101,8 +96,6 @@ public:
         // 超过最大迭代次数
         std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
         return NAN;
-        
-        return x;  // 返回最终结果
     }
 };
 
