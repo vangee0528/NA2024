@@ -1,28 +1,22 @@
 # Define variables
 CXX = g++
-CXXFLAGS = -Wall -Werror -std=c++11
 TEX = pdflatex
 SRC_DIR = .
 BUILD_DIR = release
-TARGET = $(BUILD_DIR)/all_programs
+PROBLEMS = ProblemB ProblemC ProblemD ProblemE ProblemF
+TARGETS = $(patsubst %, $(BUILD_DIR)/%, $(PROBLEMS))
 TEX_SRC = report.tex
 TEX_OUT = report.pdf
-CPP_FILES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJ_FILES = $(CPP_FILES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
 # Phony targets
 .PHONY: all clean run report
 
 # Default target to compile and link all C++ programs
-all: $(TARGET)
+all: $(TARGETS)
 
-# Compile object files and link them
-$(TARGET): $(OBJ_FILES) | $(BUILD_DIR)
-	$(CXX) $(OBJ_FILES) -o $(TARGET)
-
-# Compile C++ source files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Compile each problem into its own executable
+$(BUILD_DIR)/%: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 # Create build directory
 $(BUILD_DIR):
@@ -30,12 +24,16 @@ $(BUILD_DIR):
 
 # Clean up build files
 clean:
-	rm -rf $(BUILD_DIR) $(TEX_OUT)
+	rm -rf $(BUILD_DIR) $(TEX_OUT) *.log *.aux
 
-# Run all compiled programs
+# Run all compiled programs sequentially
 run: all
-	$(TARGET)
+	@for target in $(TARGETS); do \
+		echo "Running $$target...\n"; \
+		$$target; \
+	done
 
 # Compile LaTeX report
 report:
 	$(TEX) $(TEX_SRC)
+	$(TEX) $(TEX_SRC) # Run twice to ensure cross-references are correct
