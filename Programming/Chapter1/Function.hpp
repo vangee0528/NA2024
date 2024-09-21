@@ -19,18 +19,6 @@ public:
     // 虚析构函数
     virtual ~Function() {}
 
-    // 判断函数是否在区间 [a, b] 上连续
-    virtual bool isContinuous(double a, double b, int samples = 100) const {
-        double step = (b - a) / samples;
-        for (int i = 0; i < samples; ++i) {
-            double x1 = a + i * step;
-            double x2 = a + (i + 1) * step;
-            if (std::fabs((*this)(x2) - (*this)(x1)) > std::numeric_limits<double>::epsilon()) {
-                return false; // 存在跳跃或不连续
-            }
-        }
-        return true; // 连续
-    }
 };
 
 #endif

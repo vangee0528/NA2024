@@ -23,7 +23,7 @@ private:
     int Maxiter; // 最大迭代次数
 public:
     Bisection_Method(const Function &F, double a, double b, 
-        double eps = 1e-7, double delta = 1e-7, int Maxiter = 50) :
+        double eps = 1e-7, double delta = 1e-7, int Maxiter = 1000) :
         EquationSolver(F), a(a), b(b), eps(eps), delta(delta), Maxiter(Maxiter) {}
 
     virtual double solve() {
@@ -35,11 +35,6 @@ public:
             throw std::runtime_error("Error: The function values at the endpoints of the interval must have opposite signs.");
         }
 
-        // //预处理：检查函数在区间内是否连续
-
-        // if (!F.isContinuous(a, b)) {
-        //     throw std::runtime_error("Error: The function is not continuous on the interval.");
-        // }
 
         // 二分迭代
         double c, fc;
@@ -49,8 +44,14 @@ public:
             c = (a + b) / 2;
             fc = F(c);
 
-            // 当前区间小于delta或函数值接近0
-            if (std::fabs(fc) < eps || (b - a) / 2 < delta) {
+            // // 当前区间小于delta或函数值接近0
+            // if (std::fabs(fc) < eps || (b - a) / 2 < delta) {
+            //     std::cout << "Converged after " << iter << " iterations." << std::endl;
+            //     return c;  // 找到近似根
+            // }
+
+            // 当前区间小于delta且函数值接近0
+            if (std::fabs(fc) < eps && (b - a) / 2 < delta) { //为了获得更好的近似根，同时满足区间精度和收敛精度
                 std::cout << "Converged after " << iter << " iterations." << std::endl;
                 return c;  // 找到近似根
             }
@@ -67,8 +68,13 @@ public:
             iter++;
         }
 
-        // 达到最大迭代次数
-        throw std::runtime_error("Error: Maximum number of iterations reached without sufficient precision.");
+        // 达到最大迭代次数时报错
+        if(F(c) >= eps){
+            std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
+            return NAN;
+        }
+
+        return NAN;
     }
 };
 
@@ -91,13 +97,18 @@ public:
         for (int i = 0; i < Maxiter; ++i) {
             fx = F(x);
             dfx = F.derivative(x);  
-            if (std::fabs(fx) < eps) return x;  // 如果已经满足精度要求，返回根
+            if (std::fabs(fx) < eps) {
+                std::cout << "Converged after " << i << " iterations." << std::endl;
+                return x;  // 如果已经满足精度要求，返回根
+            }
             if (dfx == 0) throw std::runtime_error("Error: Derivative is zero."); // 防止除零
             x = x - fx / dfx;  
         }
+
         // 检查最后的结果
         if (std::fabs(F(x)) >= eps) {
-            throw std::runtime_error("Error: Maximum iterations reached without convergence.");
+            std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
+            return NAN;
         }
         return x;  // 返回最终结果
     }
@@ -112,17 +123,21 @@ private:
     int Maxiter;  // 最大迭代次数
 public:
     Secant_Method(const Function &F, double x0, double x1, 
-        double eps = 1e-7, int Maxiter = 8) :
+        double eps = 1e-7, int Maxiter = 100) :
         EquationSolver(F), x0(x0), x1(x1), eps(eps), Maxiter(Maxiter) {}
     
     virtual double solve() {
         double x2, fx0 = F(x0), fx1 = F(x1);
         for (int i = 0; i < Maxiter; ++i) {
             if (std::fabs(fx1 - fx0) < eps) {
-                throw std::runtime_error("Error: Function values are too close.");
+                std::cout << "\033[1;31mError: Function values are too close.\033[0m" << std::endl;
+                return NAN;
             }
             x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0);  
-            if (std::fabs(F(x2)) < eps) return x2;  
+            if (std::fabs(F(x2)) < eps) {
+                std::cout << "Converged after " << i << " iterations." << std::endl;
+                return x2;  // 找到近似根
+            }
             x0 = x1;
             fx0 = fx1;
             x1 = x2;
@@ -130,7 +145,8 @@ public:
         }
         // 检查最后的结果
         if (std::fabs(F(x1)) >= eps) {
-            throw std::runtime_error("Error: Maximum iterations reached without convergence.");
+            std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
+            return NAN;
         }
         return x1;  // 返回最终结果
     }
