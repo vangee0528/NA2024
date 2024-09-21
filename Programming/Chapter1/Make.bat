@@ -1,7 +1,7 @@
 @echo off
 rem Define variables
 set CXX=g++
-set TEX=pdflatex
+set TEX=xelatex
 set SRC_DIR=.
 set BUILD_DIR=release
 set PROBLEMS=ProblemB ProblemC ProblemD ProblemE
@@ -37,14 +37,21 @@ for %%p in (%PROBLEMS%) do (
     pause  rem Pause after each program to prevent immediate close
 )
 
-
-
-rem Compile LaTeX report
 :report
 echo Compiling LaTeX report...
 %TEX% %TEX_SRC%
 %TEX% %TEX_SRC%  rem Run twice to ensure cross-references are correct
 exit /b 0
+
+:clean
+echo Cleaning up...
+del /q %BUILD_DIR%\*.exe
+del /q %TEX_OUT%
+del /q %TEX_SRC:.tex=.aux%
+del /q %TEX_SRC:.tex=.log%
+del /q %TEX_SRC:.tex=.out%
+del /q %TEX_SRC:.tex=.toc%
+echo Clean up completed.
 
 rem Check for command line arguments
 if "%1" == "run" (

@@ -7,19 +7,19 @@
 ```
 Programming/
 └── Chapter1/
-    ├── Function.hpp
-    ├── EquationSolver.hpp
-    |
-    ├── ProblemB.cpp
-    ├── ProblemC.cpp
-    ├── ProblemD.cpp
-    ├── ProblemE.cpp
-    ├── ProblemF.cpp
-    ├── report.tex
-    |
     ├── README.md
     ├── Make.bat
     ├── Makefile
+    ├── report.tex
+    |
+    ├── src/
+    |   ├── Function.hpp
+    |   ├── EquationSolver.hpp
+    |   ├── ProblemB.cpp
+    |   ├── ProblemC.cpp
+    |   ├── ProblemD.cpp
+    |   ├── ProblemE.cpp
+    |   └── ProblemF.cpp
     |
     └── release/      
         ├── ProblemB
@@ -38,9 +38,14 @@ Programming/
 make run
 ```
 
-使用一下命令编译TeX文件：
+使用以下命令编译TeX文件：
 ```bash
 make report
+```
+
+使用以下命令清理项目：
+```bash
+make clean
 ```
 
 ### Windows

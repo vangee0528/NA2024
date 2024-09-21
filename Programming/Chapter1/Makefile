@@ -1,7 +1,7 @@
 # Define variables
 CXX = g++
 TEX = pdflatex
-SRC_DIR = .
+SRC_DIR = ./src
 BUILD_DIR = release
 PROBLEMS = ProblemB ProblemC ProblemD ProblemE ProblemF
 TARGETS = $(patsubst %, $(BUILD_DIR)/%, $(PROBLEMS))
