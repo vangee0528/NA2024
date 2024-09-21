@@ -42,6 +42,7 @@ public:
     }
 };
 
+
 int main() {
 
         // 测试函数1: f(x) = 1/x - tan(x) 在区间 [0, pi/2]
@@ -87,9 +88,7 @@ int main() {
         Function4 f4;
         double a = 0;
         double b = 4;
-        Bisection_Method solver4(f4, a, b);
-        std::cout << f4(0)<<f4(4) << std::endl;
-        double root4 = solver4.solve();
+        Bisection_Method solver4(f4, a, b);        double root4 = solver4.solve();
         std::cout << "Root: " << root4 << std::endl;
         std::cout << "f(root) = " << f4(root4) << std::endl << std::endl;
     }
