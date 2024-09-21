@@ -38,8 +38,7 @@ public:
 
         // 二分迭代
         double c, fc;
-        int iter = 0; // 迭代次数
-        while (iter < Maxiter) {
+        for (int i = 0; i < Maxiter; ++i) {
             // 中点
             c = (a + b) / 2;
             fc = F(c);
@@ -52,7 +51,7 @@ public:
 
             // 当前区间小于delta且函数值接近0
             if (std::fabs(fc) < eps && (b - a) / 2 < delta) { //为了获得更好的近似根，同时满足区间精度和收敛精度
-                std::cout << "Converged after " << iter << " iterations." << std::endl;
+                std::cout << "Converged after " << i << " iterations." << std::endl;
                 return c;  // 找到近似根
             }
 
@@ -65,16 +64,10 @@ public:
                 fa = fc;
             }
 
-            iter++;
         }
-
-        // 达到最大迭代次数时报错
-        if(F(c) >= eps){
-            std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
-            return NAN;
-        }
-
+        std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
         return NAN;
+
     }
 };
 
@@ -94,7 +87,7 @@ public:
     
     virtual double solve() {
         double x = x0, fx, dfx;
-        for (int i = 0; i < Maxiter; ++i) {
+        for (int i = 0; i < Maxiter+1; ++i) {
             fx = F(x);
             dfx = F.derivative(x);  
             if (std::fabs(fx) < eps) {
@@ -105,11 +98,10 @@ public:
             x = x - fx / dfx;  
         }
 
-        // 检查最后的结果
-        if (std::fabs(F(x)) >= eps) {
-            std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
-            return NAN;
-        }
+        // 超过最大迭代次数
+        std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
+        return NAN;
+        
         return x;  // 返回最终结果
     }
 };
@@ -128,7 +120,7 @@ public:
     
     virtual double solve() {
         double x2, fx0 = F(x0), fx1 = F(x1);
-        for (int i = 0; i < Maxiter; ++i) {
+        for (int i = 0; i < Maxiter+1; ++i) {
             if (std::fabs(fx1 - fx0) < eps) {
                 std::cout << "\033[1;31mError: Function values are too close.\033[0m" << std::endl;
                 return NAN;
@@ -143,12 +135,9 @@ public:
             x1 = x2;
             fx1 = F(x1);
         }
-        // 检查最后的结果
-        if (std::fabs(F(x1)) >= eps) {
-            std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
-            return NAN;
-        }
-        return x1;  // 返回最终结果
+        // 超过最大迭代次数
+        std::cout << "\033[1;31mError: Maximum iterations reached without convergence.\033[0m" << std::endl;
+        return NAN;
     }
 };
 

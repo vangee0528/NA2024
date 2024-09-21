@@ -45,33 +45,64 @@ int main() {
 
         // 1. f(x) = sin(x/2) - 1
         {
-            std::cout << "Testing f(x) = sin(x/2) - 1:" << std::endl;
+            std::cout << "Testing f(x) = sin(x/2) - 1 with initial value 0 and pi/2:" << std::endl;
             f1 function1;
             Secant_Method solver1(function1, 0, M_PI / 2);
             double root1 = solver1.solve();
-            std::cout << "Root of sin(x/2) - 1: " << root1 << std::endl;
+            std::cout << "\033[34mRoot: " << root1 << "\033[0m" << std::endl;
             std::cout << "f(root) = " << function1(root1) << std::endl;
             checkRoot(function1, root1);
         }
 
+        {
+            std::cout << "Testing f(x) = sin(x/2) - 1 with another initial value 2pi and 3pi:" << std::endl;
+            f1 function1;
+            Secant_Method solver1(function1, 2 * M_PI, 3 * M_PI);
+            double root1 = solver1.solve();
+            std::cout << "\033[34mRoot: " << root1 << "\033[0m" << std::endl;
+            std::cout << "f(root) = " << function1(root1) << std::endl;
+            checkRoot(function1, root1);
+        }
+
+
         // 2. f(x) = e^x - tan(x)
         {
-            std::cout << "Testing f(x) = e^x - tan(x):" << std::endl;
+            std::cout << "Testing f(x) = e^x - tan(x) with initial value 1 and 1.4 :" << std::endl;
             f2 function2;
             Secant_Method solver2(function2, 1, 1.4);
             double root2 = solver2.solve();
-            std::cout << "Root of e^x - tan(x): " << root2 << std::endl;
+            std::cout << "\033[35mRoot: " << root2 << "\033[0m" << std::endl;
+            std::cout << "f(root) = " << function2(root2) << std::endl;
+            checkRoot(function2, root2);
+        }
+
+        {
+            std::cout << "Testing f(x) = e^x - tan(x) with another initial value 2 and 3 :" << std::endl;
+            f2 function2;
+            Secant_Method solver2(function2, 2, 3);
+            double root2 = solver2.solve();
+            std::cout << "\033[35mRoot: " << root2 << "\033[0m" << std::endl;
             std::cout << "f(root) = " << function2(root2) << std::endl;
             checkRoot(function2, root2);
         }
 
         // 3. f(x) = x^3 - 12x^2 + 3x + 1
         {
-            std::cout << "Testing f(x) = x^3 - 12x^2 + 3x + 1:" << std::endl;
+            std::cout << "Testing f(x) = x^3 - 12x^2 + 3x + 1 with initial value 0 and -0.5:" << std::endl;
             f3 function3;
             Secant_Method solver3(function3, 0, -0.5);
             double root3 = solver3.solve();
-            std::cout << "Root of x^3 - 12x^2 + 3x + 1: " << root3 << std::endl;
+            std::cout << "\033[36mRoot: " << root3 << "\033[0m" << std::endl;
+            std::cout << "f(root) = " << function3(root3) << std::endl;
+            checkRoot(function3, root3);
+        }
+
+        {
+            std::cout << "Testing f(x) = x^3 - 12x^2 + 3x + 1 with another initial value 1 and 2:" << std::endl;
+            f3 function3;
+            Secant_Method solver3(function3, 1, 2);
+            double root3 = solver3.solve();
+            std::cout << "\033[36mRoot: " << root3 << "\033[0m" << std::endl;
             std::cout << "f(root) = " << function3(root3) << std::endl;
             checkRoot(function3, root3);
         }

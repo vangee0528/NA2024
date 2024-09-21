@@ -53,8 +53,8 @@ void checkRoot(const Function &f, double root) {
 }
 
 int main() {
-    std::cout << "--------------------------------" << std::endl << std::endl;
 
+    std::cout << "--------------------------------" << std::endl << std::endl;
 
     // 测试函数1: f(x) = 1/x - tan(x) 在区间 [0, pi/2]
     {
