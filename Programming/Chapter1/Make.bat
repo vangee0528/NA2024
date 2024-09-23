@@ -2,7 +2,7 @@
 rem Define variables
 set CXX=g++
 set TEX=xelatex
-set SRC_DIR=.
+set SRC_DIR=.\src
 set BUILD_DIR=release
 set PROBLEMS=ProblemB ProblemC ProblemD ProblemE
 set TEX_SRC=report.tex
@@ -34,37 +34,31 @@ for %%p in (%PROBLEMS%) do (
         echo Error running %%p.exe, stopping...
         exit /b 1
     )
-    pause  rem Pause after each program to prevent immediate close
 )
 
 :report
 echo Compiling LaTeX report...
 %TEX% %TEX_SRC%
 %TEX% %TEX_SRC%  rem Run twice to ensure cross-references are correct
-exit /b 0
+
+rem 询问是否清理中间文件
+echo Do you want to clean up the intermediate files? [y/n]
+set /p clean=
+if %clean%==y goto clean
+if %clean%==n exit /b 0
 
 :clean
 echo Cleaning up...
 del /q %BUILD_DIR%\*.exe
-del /q %TEX_OUT%
+@REM del /q %TEX_OUT%
 del /q %TEX_SRC:.tex=.aux%
 del /q %TEX_SRC:.tex=.log%
 del /q %TEX_SRC:.tex=.out%
 del /q %TEX_SRC:.tex=.toc%
 echo Clean up completed.
-
-rem Check for command line arguments
-if "%1" == "run" (
-    call :compile
-    call :run
-) else if "%1" == "clean" (
-    call :clean
-) else if "%1" == "report" (
-    call :report
-) else (
-    echo Usage: %0 [run|clean|report]
-)
+exit /b 0
 
 
 
+echo Usage: %0 [run|clean|report]
 exit /b 0

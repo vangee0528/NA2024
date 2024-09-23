@@ -24,6 +24,13 @@
 
 \maketitle
 
+% =================================================
+
+\begin{abstract}
+This report presents the implementation and validation of three numerical methods—Bisection, Newton's, and Secant—for solving nonlinear equations in C++. The methods were tested on several mathematical functions, where the correctness of the solutions was verified by checking roots obtained by each method. Additionally, the performance of these solvers was evaluated on real-world problems such as vehicle nose-in failure analysis, which involves solving a trigonometric equation with multiple solutions due to its periodic nature. Key insights are provided on the behavior of these methods, particularly regarding convergence and the impact of initial guesses, especially for the Secant Method. The results demonstrate that all methods can successfully find solutions, though with varying efficiency depending on the problem and initial conditions.
+\end{abstract}
+
+
 % ===============================================
 \section{Problem A: Method Implementations}
 
@@ -38,7 +45,7 @@ We start by writing \texttt{Function.hpp}, which includes a virtual class \textt
 
 Then, we implemented \texttt{EquationSolver.hpp}, where we define the virtual class \texttt{EquationSolver}, containing a virtual \texttt{solve()} function.
 
-Based on this structure, we create three derived classes: \texttt{Bisection\_Method}, \texttt{NewtonSolver}, and \texttt{Secant\_Method}, each inheriting from \texttt{EquationSolver}. These classes implement their respective methods to solve nonlinear equations using bisection, Newton's, and secant methods.
+Based on this structure, we create three derived classes: \texttt{BisectionMethod}, \texttt{NewtonMethod}, and \texttt{SecantMethod}, each inheriting from \texttt{EquationSolver}. These classes implement their respective methods to solve nonlinear equations using bisection, Newton's, and secant methods.
 
 % =================================================
 \section{Problem B: Validating the Bisection Method}
@@ -102,8 +109,56 @@ The results show that all three methods converge to the same solution.
   \caption{Output for Problem E}
 \end{figure}
 
+
+% =================================================
+\section{Problem F: Vehicle Nose-In Failure Analysis}
+
+In \textbf{Problem F}, we analyze the nose-in failure of a vehicle attempting to negotiate obstacles. The problem requires us to solve the equation:
+
+\[
+A \sin \alpha \cos \alpha + B \sin^2 \alpha - C \cos \alpha - E \sin \alpha = 0
+\]
+
+where the constants \( A \), \( B \), \( C \), and \( E \) are defined based on vehicle parameters \( l \), \( h \), \( D \), and \( \beta_1 \).
+
+We solve this equation for the maximum angle \( \alpha \) using three different numerical methods: Bisection Method, Newton's Method, and Secant Method.
+
+\subsection* {a. Bisection Method}
+For part (a), we used the Bisection Method to find \( \alpha \) when \( l = 89 \, \text{in.}, h = 49 \, \text{in.}, D = 55 \, \text{in.}, \) and \( \beta_1 = 11.5^\circ \). The method successfully converged within the interval \([0^\circ, 180^\circ]\) to an approximate solution for \( \alpha \). The result of the Bisection Method is:
+
+\[
+\alpha \approx 32.959^\circ
+\]
+
+\subsection* {b. Newton's Method}
+For part (b), we applied Newton's Method with an initial guess of \( 33^\circ \). The solver successfully converged after a few iterations to the same solution as the Bisection Method. Newton's Method proved to be faster than the Bisection Method due to its quadratic convergence properties. The result is:
+
+\[
+\alpha \approx 2.9722^\circ3
+\]
+
+\subsection* {c. Secant Method}
+For part (c), we used the Secant Method with two initial guesses of \( 100 \) and \( 200 \). The method converged to the solution after several iterations. The result is:
+
+\[
+\alpha \approx -371.5^\circ
+\]
+
+First, the function \( f(\alpha) \) is a periodic function. Since it includes sine and cosine terms, which are periodic with a period of \( 360^\circ \) (or \( 2\pi \)), the equation \( f(\alpha) = 0 \) can have infinitely many solutions. This means that besides the solution near \( 33^\circ \), there may be other solutions distributed across different cycles of the function.
+
+Because sine and cosine repeat every \( 360^\circ \), when the initial guess for \( \alpha \) is far from \( 33^\circ \), the algorithm might be directed to a solution in a different cycle of the function. Instead of converging to the solution near \( 33^\circ \), it may find a solution in the next or previous cycle.
+
+Therefore, when choosing an initial guess far from \( 33^\circ \), the algorithm may bypass the expected solution and instead find another one, due to the periodicity of the trigonometric functions.
+
+\begin{figure}[H]  % Use [H] to force the image position
+  \centering
+  \includegraphics[width=0.5\textwidth]{./picture/ProblemF.png}
+  \caption{Output for Problem F}
+\end{figure}
+
+
 % =======================
-\section*{References}
+\section{References}
 \begin{itemize}
    \item handoutsNumPDEs
    \item ChatGPT, \textit{AI Language Model}, OpenAI Platform, 2024.
