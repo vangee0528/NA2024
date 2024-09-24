@@ -3,7 +3,7 @@
 \usepackage{amsthm,amsmath,amssymb}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{float}  % To force image positioning with [H]
+\usepackage{float}  
 
 \geometry{margin=1.5cm, vmargin={0pt,1cm}}
 \setlength{\topmargin}{-1cm}
@@ -60,7 +60,7 @@ As shown in the output:
     \item The fourth function, which is discontinuous in the given interval, fails to find a solution within the maximum number of iterations, throwing an exception.
 \end{itemize}
 
-\begin{figure}[H]  % Use [H] to force the image position
+\begin{figure}[H]  
   \centering
   \includegraphics[width=0.5\textwidth]{./picture/ProblemB.png}
   \caption{Output for Problem B}
@@ -75,7 +75,7 @@ In the main program, we input the function and two initial guesses, then call th
 
 As shown in the output, Newton's method finds approximate solutions near both initial guesses.
 
-\begin{figure}[H]  % Use [H] to force the image position
+\begin{figure}[H]  
   \centering
   \includegraphics[width=0.4\textwidth]{./picture/ProblemC.png}
   \caption{Output for Problem C}
@@ -90,7 +90,7 @@ In the main program, we input the functions, two initial guesses (from the probl
 
 As shown in the output, the secant method finds approximate solutions in all six cases. Different initial guesses may lead to different solutions since the secant method relies on two initial points to estimate the function's slope. Using different initial points can lead to the algorithm converging to different roots when multiple roots exist.
 
-\begin{figure}[H]  % Use [H] to force the image position
+\begin{figure}[H]  
   \centering
   \includegraphics[width=0.5\textwidth]{./picture/ProblemD.png}
   \caption{Output for Problem D}
@@ -103,7 +103,7 @@ In \textbf{Problem E}, we apply the three solvers to solve a real-world problem.
 
 The results show that all three methods converge to the same solution.
 
-\begin{figure}[H]  % Use [H] to force the image position
+\begin{figure}[H]  
   \centering
   \includegraphics[width=0.5\textwidth]{./picture/ProblemE.png}
   \caption{Output for Problem E}
@@ -152,7 +152,7 @@ Because sine and cosine repeat every \( 360^\circ \), when the initial guess for
 
 Therefore, when choosing an initial guess far from \( 33^\circ \), the algorithm may bypass the expected solution and instead find another one, due to the periodicity of the trigonometric functions.
 
-\begin{figure}[H]  % Use [H] to force the image position
+\begin{figure}[H]  
   \centering
   \includegraphics[width=0.5\textwidth]{./picture/ProblemF.png}
   \caption{Output for Problem F}
