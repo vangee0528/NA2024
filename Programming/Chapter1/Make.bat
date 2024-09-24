@@ -1,20 +1,37 @@
 @echo off
+setlocal
+
 rem Define variables
 set CXX=g++
 set TEX=xelatex
 set SRC_DIR=.\src
 set BUILD_DIR=release
-set PROBLEMS=ProblemB ProblemC ProblemD ProblemE
+set PROBLEMS=ProblemB ProblemC ProblemD ProblemE ProblemF
 set TEX_SRC=report.tex
 set TEX_OUT=report.pdf
 
-rem Create the release directory if it doesn't exist
+@REM Create the release directory if it doesn't exist
 if not exist %BUILD_DIR% (
     mkdir %BUILD_DIR%
 )
 
-rem Compile each problem into its own executable
-:compile
+@REM Main logic to execute the corresponding function based on the argument
+if "%~1"=="" (
+    goto :run
+    goto :report
+    goto :clean
+    exit /b
+) else if "%~1"=="run" (
+    goto :run
+) else if "%~1"=="report" (
+    goto :report
+) else if "%~1"=="clean" (
+    goto :clean
+)
+
+echo %BUILD_DIR% created.
+@REM Compile each problem into its own executable
+:run
 for %%p in (%PROBLEMS%) do (
     echo Compiling %%p...
     %CXX% %CXXFLAGS% %SRC_DIR%\%%p.cpp -o %BUILD_DIR%\%%p.exe
@@ -25,8 +42,6 @@ for %%p in (%PROBLEMS%) do (
 )
 echo Compilation completed.
 
-rem Run all compiled programs sequentially in the same command prompt
-:run
 for %%p in (%PROBLEMS%) do (
     echo Running %%p.exe...
     call %BUILD_DIR%\%%p.exe
@@ -35,30 +50,26 @@ for %%p in (%PROBLEMS%) do (
         exit /b 1
     )
 )
+exit /b
 
+@REM Generate LaTeX report
 :report
 echo Compiling LaTeX report...
 %TEX% %TEX_SRC%
-%TEX% %TEX_SRC%  rem Run twice to ensure cross-references are correct
+%TEX% %TEX_SRC%  
+del /q %TEX_SRC:.tex=.aux%
+del /q %TEX_SRC:.tex=.log%
 
-rem 询问是否清理中间文件
+
 echo Do you want to clean up the intermediate files? [y/n]
 set /p clean=
-if %clean%==y goto clean
-if %clean%==n exit /b 0
+if /i "%clean%"=="y" goto clean
+if /i "%clean%"=="n" exit /b 0
+exit /b
 
 :clean
 echo Cleaning up...
 del /q %BUILD_DIR%\*.exe
-@REM del /q %TEX_OUT%
-del /q %TEX_SRC:.tex=.aux%
-del /q %TEX_SRC:.tex=.log%
-del /q %TEX_SRC:.tex=.out%
-del /q %TEX_SRC:.tex=.toc%
+del /q %TEX_SRC:.tex=.pdf%
 echo Clean up completed.
-exit /b 0
-
-
-
-echo Usage: %0 [run|clean|report]
 exit /b 0

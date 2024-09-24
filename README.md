@@ -15,7 +15,7 @@ This repository is for storing the homework for the Numerical Analysis course in
 ## Directory
 
 - [Homework 1](./Theoretical/Chapter1/) 2024.9.20
-- [Homework 2](./Programming/Chapter1/)
+- [Homework 2](./Programming/Chapter1/) 2024.9.24
 
 ---
 
@@ -24,6 +24,7 @@ This repository is for storing the homework for the Numerical Analysis course in
 If you have any questions, please contact me:
 
 - Email: [3220102895@zju.edu.cn](mailto:3220102895@zju.edu.cn)
+- Tel: 13285791572
 
 ---
 
