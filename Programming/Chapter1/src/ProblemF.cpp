@@ -74,10 +74,24 @@ int main() {
     std::cout << "Use secant method with initial guesses far away from 33 to find alpha:\n" << std::endl;;
     Secant_Method solver3(f, 100, 200);
     double root3 = solver3.solve();
+    std::cout << "Initial guesses: 100, 200" << std::endl;
     std::cout << "\033[34mRoot: " << root3 * 180 / M_PI << "\033[0m" << std::endl;
     std::cout << "f(root) = " << f(root3) << std::endl;
     checkRoot(f, root3);
 
+    Secant_Method solver5(f, -1, -2);
+    double root4 = solver5.solve();
+    std::cout << "Initial guesses: -1, -2" << std::endl;
+    std::cout << "\033[34mRoot: " << root4 * 180 / M_PI << "\033[0m" << std::endl;
+    std::cout << "f(root) = " << f(root4) << std::endl;
+    checkRoot(f, root4);
+
+    Secant_Method solver4(f, 10, 20);
+    double root5 = solver4.solve();
+    std::cout << "Initial guesses: 10, 20" << std::endl;
+    std::cout << "\033[34mRoot: " << root5 * 180 / M_PI << "\033[0m" << std::endl;
+    std::cout << "f(root) = " << f(root5) << std::endl;
+    checkRoot(f, root5);
 
 
 

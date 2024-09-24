@@ -144,6 +144,8 @@ For part (c), we used the Secant Method with two initial guesses of \( 100 \) an
 \alpha \approx -371.5^\circ
 \]
 
+Then we try another two pairs of initial guesses: \( 10 \) and \( 20 \), and \( 170 \) and \( 180 \). The results are all different. 
+
 First, the function \( f(\alpha) \) is a periodic function. Since it includes sine and cosine terms, which are periodic with a period of \( 360^\circ \) (or \( 2\pi \)), the equation \( f(\alpha) = 0 \) can have infinitely many solutions. This means that besides the solution near \( 33^\circ \), there may be other solutions distributed across different cycles of the function.
 
 Because sine and cosine repeat every \( 360^\circ \), when the initial guess for \( \alpha \) is far from \( 33^\circ \), the algorithm might be directed to a solution in a different cycle of the function. Instead of converging to the solution near \( 33^\circ \), it may find a solution in the next or previous cycle.
