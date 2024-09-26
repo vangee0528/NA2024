@@ -9,11 +9,9 @@ TEX_OUT = answer.pdf
 # Default target to compile and link all C++ programs
 all: $(TARGETS)
 
-
 # Clean up build files
 clean:
 	rm -rf $(BUILD_DIR) $(TEX_OUT) *.log *.aux
-
 
 # Compile LaTeX report
 report:
