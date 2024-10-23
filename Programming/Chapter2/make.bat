@@ -9,6 +9,7 @@ set REPORT_FILE=report.tex
 if "%1" == "run" goto run
 if "%1" == "clean" goto clean
 if "%1" == "report" goto report
+if "%1" == "" goto run
 
 echo Invalid command. Use ./make run, ./make clean, or ./make report.
 goto end

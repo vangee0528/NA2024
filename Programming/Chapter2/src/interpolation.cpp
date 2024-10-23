@@ -129,13 +129,13 @@ Polynomial HermiteInterpolator::interpolate() const {
 }
 
 
-// Point 结构体实现
+// POINT STRUCT
 Point::Point() : x(0), y(0) {}
 
-Point::Point(double x_val, double y_val) : x(x_val), y(y_val) {}
+Point::Point(double x_val, double y_val) : x(x_val), y(y_val) ,theta(atan2(y_val,x_val)) {}
 
 void Point::print() const {
-    std::cout << "Point(" << x << ", " << y << ")" << std::endl;
+    std::cout << "Point(" << x << ", " << y << ")" << " theta = " << theta << std::endl;
 }
 
 Point Point::operator+(const Point& other) const {
@@ -154,7 +154,7 @@ Point Point::operator/(double scalar) const {
     return Point(x / scalar, y / scalar);
 }
 
-// Bezier 类实现
+// BEZIER CLASS 
 Bezier::Bezier(const std::vector<Point>& control_points) : control_points_(control_points) {}
 void Bezier::printOut() const {
     std::cout << "x(t) =";
@@ -197,7 +197,6 @@ void Bezier::FileOut(std::ofstream& outfile,double x) const {
     outfile << std::endl;
 }
 
-// 辅助函数实现
 int Factorial(int n) {
     int result = 1;
     for (int i = 1; i <= n; i++) {
@@ -228,7 +227,7 @@ std::string Bernstein(int n, int k) {
     return result;
 }
 
-// 心形函数实现
+// HEART FUNCTION
 std::vector<double> heart_function(double x) {
     double y1 = 2.0 * (sqrt(3 - x * x) + sqrt(sqrt(x*x))) / 3.0;
     double y2 = 2.0 * (-sqrt(3 - x * x) + sqrt(sqrt(x*x))) / 3.0;
@@ -236,41 +235,47 @@ std::vector<double> heart_function(double x) {
     return y;
 }
 
-// 计算心形函数的切线
 Point heart_tangent(double x,int i) {
     double d1, d2;
-    if(x >= 0){
+    if(x > 0){
         if(i==0) return Point(1.0, (-x/sqrt(3.0 - x * x) + 1.0/(2.0 * sqrt(x))) * 2.0 / 3.0);
         if(i==1) return Point(1.0, (x/sqrt(3.0 - x * x) + 1.0/(2.0 * sqrt(x))) * 2.0 / 3.0);
-    }else{
+    }else if(x < 0){
         if(i==0) return Point(1.0, (-x/sqrt(3.0 - x * x) - 1.0/(2.0 * sqrt(-x))) * 2.0 / 3.0);
         if(i==1) return Point(1.0, (x/sqrt(3.0 - x * x) - 1.0/(2.0 * sqrt(-x))) * 2.0 / 3.0);
+    }else{
+        return Point(1.0, 0);
     }
     return Point(0,0);
 }
 
-// 寻找心形函数上的 m + 1 个点
+
 std::vector<Point> find_points(int m) {
     std::vector<Point> points;
     int half_m = m / 2;
     for (int j = 0; j < half_m; j++) {
-        double x1 = -1.7 + 1.6 * j / half_m;
-        double x2 = 0.01 + 1.6 * j / half_m;
+        double bound_x = sqrt(3.0) - 1e-2; // 测试下来最优的边界
+        double x1 = -bound_x +  2 * bound_x * j / (half_m - 1);
         double y1_1 = heart_function(x1)[0];
         double y1_2 = heart_function(x1)[1];
-        double y2_1 = heart_function(x2)[0];
-        double y2_2 = heart_function(x2)[1];
         points.push_back(Point(x1, y1_1));
         points.push_back(Point(x1, y1_2));
-        points.push_back(Point(x2, y2_1));
-        points.push_back(Point(x2, y2_2));
+
     }
     points.push_back(Point(-1.71, 1.09033));
+
+    for(int i = 0; i < points.size(); i++){
+        for(int j = i + 1; j < points.size(); j++){
+            if(points[i].theta > points[j].theta){
+                Point temp = points[i];
+                points[i] = points[j];
+                points[j] = temp;
+            }
+        }
+    }
     return points;
 }
 
-
-// 将点列转换为控制点
 std::vector<std::vector<Point>> convert_to_control_points(const std::vector<Point>& points) {
     std::vector<std::vector<Point>> control_points;
     for (int i = 0; i < points.size() - 1; i++) {

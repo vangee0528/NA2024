@@ -8,7 +8,7 @@ def f(x):
 # 读取插值数据
 def read_interpolation_data(filename):
     data = {}
-    with open(filename, 'r', encoding='utf-8') as file:  # 添加 encoding='utf-8'
+    with open(filename, 'r', encoding='utf-8') as file:
         lines = file.readlines()
         
         n = None

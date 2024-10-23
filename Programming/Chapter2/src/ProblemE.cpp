@@ -16,7 +16,6 @@ int main() {
     Polynomial sp1_polynomial = sp1_interpolator.interpolate();
     Polynomial sp2_polynomial = sp2_interpolator.interpolate();
 
-    // 打开文件输出
     std::ofstream outfile("data/ProblemE.txt");
 
     // 输出样本1的多项式
@@ -39,7 +38,7 @@ int main() {
     }
     outfile << "\n";
 
-    // 输出给定10个时间点的重量
+    // 输出已知的时间点的重量
     outfile << "Day Sample1_Weight Sample2_Weight\n";
     for (int i = 0; i < days.size(); ++i) {
         outfile << days[i] << " " << sp1_weights[i] << " " << sp2_weights[i] << "\n";
@@ -50,7 +49,6 @@ int main() {
     double sp1_future_weight = sp1_polynomial.evaluate(futureTime);
     double sp2_future_weight = sp2_polynomial.evaluate(futureTime);
 
-    // 输出 t=43 时的预测重量
     std::cout << "Predicted Weight of Sample 1 at t = " << futureTime << ": " << sp1_future_weight << " grams" << std::endl;
     std::cout << "Predicted Weight of Sample 2 at t = " << futureTime << ": " << sp2_future_weight << " grams" << std::endl;
 
