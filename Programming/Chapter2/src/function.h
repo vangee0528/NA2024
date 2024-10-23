@@ -1,5 +1,4 @@
 #include "interpolation.h"
-
 /* ====函数实现==== */
 
 // POLYNOMIAL CLASS
@@ -127,3 +126,4 @@ Polynomial HermiteInterpolator::interpolate() const {
 
     return result;
 }
+
