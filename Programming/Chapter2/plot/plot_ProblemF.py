@@ -5,7 +5,7 @@ def draw_plot(lines,no):
     # 解析方程
     equations = []
     for i in range(0, len(lines), 3):
-        if i + 3 < len(lines): 
+        if i + 2 < len(lines): 
 
             # 第一行为 x 取值，转化为浮点数（用于限定每个参数方程的范围）
             x = float(lines[i].strip().split('=')[1].strip())
