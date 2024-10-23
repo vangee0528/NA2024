@@ -65,5 +65,49 @@ private:
     void computeDividedDifferences();
 };
 
+// Point 结构体
+struct Point {
+    double x;
+    double y;
+
+    Point();
+    Point(double x_val, double y_val);
+
+    void print() const;
+
+    Point operator+(const Point& other) const;
+    Point operator-(const Point& other) const;
+    Point operator*(double scalar) const;
+    Point operator/(double scalar) const;
+};
+
+// Bezier 类
+class Bezier {
+public:
+    Bezier(const std::vector<Point>& control_points);
+
+    void printOut() const;
+    void FileOut(std::ofstream& outfile,double x) const;
+    Point evaluate(double t) const;
+
+private:
+    std::vector<Point> control_points_;
+};
+
+// 辅助函数
+int Factorial(int n);
+int Combination(int n, int k);
+std::string Bernstein(int n, int k);
+
+// 心形函数
+std::vector<double> heart_function(double x);
+Point heart_tangent(double x1,int i);
+
+// 寻找心形函数上的 m 个点
+std::vector<Point> find_points(int m);
+
+// 将点列转换为控制点
+std::vector<std::vector<Point>> convert_to_control_points(const std::vector<Point>& points);
+
 
 #endif // INTERPOLATION_H

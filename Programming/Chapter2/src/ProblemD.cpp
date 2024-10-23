@@ -2,7 +2,6 @@
 #include <fstream>
 #include <vector>
 #include "interpolation.h"
-#include "function.h"   
 
 int main() {
     

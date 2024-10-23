@@ -24,11 +24,11 @@ if exist *.log del *.log
 if exist *.out del *.out
 if exist *.pdf del *.pdf
 
-REM 2. 编译 src 文件夹中的所有 .cpp 文件，输出到 release 文件夹
+REM 2. 编译 src 文件夹中的所有 .cpp 文件，并链接头文件，输出到 release 文件夹
 echo Compiling C++ files...
-for %%f in (%SRC_DIR%\*.cpp) do (
+for %%f in (%SRC_DIR%\Problem*.cpp) do (
     echo Compiling %%f...
-    g++ %%f -o %RELEASE_DIR%\%%~nf.exe
+    g++  %%f src\interpolation.cpp -o %RELEASE_DIR%\%%~nf.exe
 )
 
 REM 3. 运行所有编译好的程序，将结果保存到 data 文件夹中
@@ -43,6 +43,7 @@ python %PLOT_DIR%\plot_problemB.py
 python %PLOT_DIR%\plot_problemC.py
 python %PLOT_DIR%\plot_problemD.py
 python %PLOT_DIR%\plot_problemE.py
+python %PLOT_DIR%\plot_problemF.py
 
 echo Process completed. Results saved in %FIGURE_DIR%.
 goto end
@@ -62,7 +63,7 @@ echo Compiling LaTeX report...
 pdflatex %REPORT_FILE%
 echo Report compilation completed.
 if exist *.aux del *.aux
-if exist *.log del *.log\
+if exist *.log del *.log
 if exist *.out del *.out
 goto end
 

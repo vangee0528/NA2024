@@ -3,7 +3,6 @@
 #include <vector>
 #include <functional>
 #include "interpolation.h"  
-#include "function.h"
 
 // 目标函数 f(x) = 1 / (1 + x^2)
 double f(double x) {

@@ -3,7 +3,6 @@
 #include <vector>
 #include <cmath>
 #include "interpolation.h"  
-#include "function.h"
 
 // 目标函数 f(x) = 1 / (1 + 25x^2)
 double f(double x) {
