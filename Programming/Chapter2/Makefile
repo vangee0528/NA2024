@@ -1,58 +1,54 @@
-# Define directories and files
-SRC_DIR := src
-DATA_DIR := data
-RELEASE_DIR := release
-FIGURE_DIR := figure
-PLOT_DIR := plot
-REPORT_FILE := report.tex
+# Define variables
+CXX = g++
+TEX = pdflatex
+SRC_DIR = ./src
+BUILD_DIR = release
+DATA_DIR = data
+FIGURE_DIR = figure
+PLOT_DIR = plot
+PROBLEMS = ProblemB ProblemC ProblemD ProblemE ProblemF
+TARGETS = $(patsubst %, $(BUILD_DIR)/%, $(PROBLEMS))
+TEX_SRC = report.tex
+TEX_OUT = report.pdf
 
-# Default target
-all: run
+# Phony targets
+.PHONY: all clean run report
 
-# Run the program
-run:
-	@echo Cleaning old build files...
-	@rm -f $(RELEASE_DIR)/*.exe
-	@rm -f $(DATA_DIR)/*.txt
-	@rm -f $(FIGURE_DIR)/*.png
-	@rm -f *.aux
-	@rm -f *.synctex.gz
-	@rm -f *.log
-	@rm -f *.out
-	@rm -f *.pdf
-	@echo Compiling C++ files...
-	@for f in $(SRC_DIR)/Problem*.cpp; do \
-		echo Compiling $$f... ; \
-		g++ $$f src/interpolation.cpp -o $(RELEASE_DIR)/$$(basename $$f .cpp).exe ; \
-	done
-	@echo Running compiled programs...
-	@for f in $(RELEASE_DIR)/*.exe; do \
-		./$$f ; \
-	done
-	@echo Running Python plot scripts...
-	@python $(PLOT_DIR)/plot_problemB.py
-	@python $(PLOT_DIR)/plot_problemC.py
-	@python $(PLOT_DIR)/plot_problemD.py
-	@python $(PLOT_DIR)/plot_problemE.py
-	@python $(PLOT_DIR)/plot_problemF.py
-	@echo Process completed. Results saved in $(FIGURE_DIR).
+# Default target to compile and link all C++ programs
+all: $(TARGETS)
 
-# Clean up intermediate files
+# Compile each problem into its own executable
+$(BUILD_DIR)/%: $(SRC_DIR)/%.cpp $(SRC_DIR)/interpolation.cpp | $(BUILD_DIR) $(DATA_DIR)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+# Create build directory and data directory
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(FIGURE_DIR):
+	mkdir -p $(FIGURE_DIR)
+
+# Clean up build files
 clean:
-	@echo Cleaning up...
-	@rm -f $(RELEASE_DIR)/*.exe
-	@rm -f $(DATA_DIR)/*.txt
-	@rm -f $(FIGURE_DIR)/*.png
-	@echo Clean completed.
+	rm -rf $(BUILD_DIR) $(DATA_DIR)/*.txt $(FIGURE_DIR)/*.png $(TEX_OUT) *.log *.aux *.out
+
+# Run all compiled programs sequentially
+run: all
+	@echo "Running compiled programs..."
+	mkdir figure
+	@for target in $(TARGETS); do \
+		echo "Running $$target..."; \
+		./$$target; \
+	done
+	@echo "Running Python plot scripts..."
+	python3 $(PLOT_DIR)/plot_ProblemB.py
+	python3 $(PLOT_DIR)/plot_ProblemC.py
+	python3 $(PLOT_DIR)/plot_ProblemD.py
+	python3 $(PLOT_DIR)/plot_ProblemE.py
+	python3 $(PLOT_DIR)/plot_ProblemF.py
+	@echo "Process completed. Results saved in $(FIGURE_DIR)."
 
 # Compile LaTeX report
 report:
-	@echo Compiling LaTeX report...
-	@pdflatex $(REPORT_FILE)
-	@echo Report compilation completed.
-	@rm -f *.aux
-	@rm -f *.log
-	@rm -f *.out
-
-# Phony targets
-.PHONY: all run clean report
+	$(TEX) $(TEX_SRC)
+	$(TEX) $(TEX_SRC) # Run twice to ensure cross-references are correct
