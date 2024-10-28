@@ -23,6 +23,7 @@ int main() {
     // 参数设置
     std::vector<int> n_values = {5, 10, 15, 20};
     double a = -1.0, b = 1.0;
+    std::cout << "============Problem C=============" << std::endl;
     std::ofstream outfile("data/ProblemC.txt");
 
     // 生成数据
@@ -39,6 +40,10 @@ int main() {
         NewtonInterpolator interpolator(x_vals, f_vals);
 
         Polynomial interpolating_polynomial = interpolator.interpolate();
+
+        std::cout << "n = " << n << " : ";
+        interpolating_polynomial.print();
+
 
         for (double x = a; x <= b; x += 0.05) {
             double interpolated_value = interpolating_polynomial.evaluate(x);  

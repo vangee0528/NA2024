@@ -30,9 +30,20 @@ void Polynomial::print() const {
         if (i < coefficients.size() - 1 && coefficients[i] >= 0) {
             std::cout << "+";
         }
-        std::cout << std::fixed << std::setprecision(2) << coefficients[i] << "x^" << i << " ";
+        std::cout  << coefficients[i] << "x^" << i << " ";
     }
     std::cout << std::endl;
+}
+
+void Polynomial::FileOut(std::ofstream& outfile) const {
+    for (int i = coefficients.size() - 1; i >= 0; --i) {
+        if (i < coefficients.size() - 1 && coefficients[i] >= 0) {
+            outfile << "+";
+        }
+        outfile  << coefficients[i] << "x**" << i << " ";
+    }
+
+    outfile << std::endl;
 }
 
 Polynomial operator*(const Polynomial& p1, const Polynomial& p2) {
@@ -264,6 +275,7 @@ std::vector<Point> find_points(int m) {
     }
     points.push_back(Point(-1.71, 1.09033));
 
+    // 按照顺时针排序！
     for(int i = 0; i < points.size(); i++){
         for(int j = i + 1; j < points.size(); j++){
             if(points[i].theta > points[j].theta){

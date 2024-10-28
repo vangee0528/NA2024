@@ -17,9 +17,11 @@ int main() {
     Polynomial sp2_polynomial = sp2_interpolator.interpolate();
 
     std::ofstream outfile("data/ProblemE.txt");
-
+    std::cout << "============Problem E=============" << std::endl;
     // 输出样本1的多项式
     outfile << "Sample 1 Weight-Time Polynomial:\n";
+    std::cout << "Sample 1 Weight-Time Polynomial:" << std::endl;
+    sp1_polynomial.print();
     for (int i = sp1_polynomial.coefficients.size() - 1; i >= 0; --i) {
         if (i < sp1_polynomial.coefficients.size() - 1 && sp1_polynomial.coefficients[i] >= 0) {
             outfile << "+";
@@ -30,6 +32,8 @@ int main() {
 
     // 输出样本2的多项式
     outfile << "Sample 2 Weight-Time Polynomial:\n";
+    std::cout << "Sample 2 Weight-Time Polynomial:" << std::endl;
+    sp2_polynomial.print();
     for (int i = sp2_polynomial.coefficients.size() - 1; i >= 0; --i) {
         if (i < sp2_polynomial.coefficients.size() - 1 && sp2_polynomial.coefficients[i] >= 0) {
             outfile << "+";

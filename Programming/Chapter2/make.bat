@@ -21,6 +21,7 @@ if exist %RELEASE_DIR%\*.exe del %RELEASE_DIR%\*.exe
 if exist %DATA_DIR%\*.txt del %DATA_DIR%\*.txt
 if exist %FIGURE_DIR%\*.png del %FIGURE_DIR%\*.png
 if exist *.aux del *.aux
+if exist *.synctex.gz del *.synctex.gz
 if exist *.log del *.log
 if exist *.out del *.out
 if exist *.pdf del *.pdf

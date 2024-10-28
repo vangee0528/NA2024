@@ -20,23 +20,11 @@ int main() {
 
     // 输出距离-时间多项式
     outfile << "Displacement-Time Polynomial:\n";
-    for (int i = p.coefficients.size() - 1; i >= 0; --i) {
-        if (i < p.coefficients.size() - 1 && p.coefficients[i] >= 0) {
-            outfile << "+";
-        }
-        outfile << p.coefficients[i] << "x**" << i << " ";
-    }
-    outfile << "\n";
+    p.FileOut(outfile);
 
     // 输出速度-时间多项式
     outfile << "Speed-Time Polynomial:\n";
-    for (int i = dp.coefficients.size() - 1; i >= 0; --i) {
-        if (i < dp.coefficients.size() - 1 && dp.coefficients[i] >= 0) {
-            outfile << "+";
-        }
-        outfile << dp.coefficients[i] << "x**" << i << " ";
-    }
-    outfile << "\n";
+    dp.FileOut(outfile);
 
     // 输出给定的时间点的位置和速度，用于比较拟合结果
     outfile << "Time Displacement Speed\n";
@@ -50,7 +38,7 @@ int main() {
     double estimatedSpeed = dp.evaluate(testTime);
 
     // 输出 t=10 时的位置和速度
-    std::cout << "----------------------------------------" << std::endl;
+    std::cout << "============Problem D=============" << std::endl;
     std::cout << "\033[1;32mEstimated Displacement at t = " << testTime << ": " << estimatedDisplacement << " feet\033[0m" << std::endl;
     std::cout << "\033[1;32mEstimated Speed at t = " << testTime << ": " << estimatedSpeed << " feet/second\033[0m" << std::endl;
 
@@ -74,8 +62,7 @@ int main() {
     } else {
         std::cout << "\033[1;32mThe car never exceeds the speed limit of 81 feet/second.\033[0m" << std::endl;
     }
-    std::cout << "----------------------------------------" << std::endl;
-
+    
     outfile.close();
 
     return 0;

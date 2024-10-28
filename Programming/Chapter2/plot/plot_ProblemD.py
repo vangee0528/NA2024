@@ -53,10 +53,10 @@ for i in range(5, 10):
 
 
 polynomial_expression = lines[1].strip()
-draw_plot(polynomial_expression,points1,'Time/s','Distance/feet','Distance-Time Curve')
+draw_plot(polynomial_expression,points1,'Time/s','Displacement/feet','Displacement-Time_Curve')
 
 polynomial_expression = lines[3].strip()
-draw_plot(polynomial_expression,points2,'Time/s','Velocity/feet/s','Velocity-Time Curve',81)
+draw_plot(polynomial_expression,points2,'Time/s','Velocity/feet/s','Velocity-Time_Curve',81)
 
 
 
