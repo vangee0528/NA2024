@@ -28,14 +28,16 @@ $(BUILD_DIR):
 $(FIGURE_DIR):
 	mkdir -p $(FIGURE_DIR)
 
+$(DATA_DIR):
+	mkdir -p $(DATA_DIR)
+
 # Clean up build files
 clean:
 	rm -rf $(BUILD_DIR) $(DATA_DIR)/*.txt $(FIGURE_DIR)/*.png $(TEX_OUT) *.log *.aux *.out
 
 # Run all compiled programs sequentially
-run: all
+run: all $(DATA_DIR) $(FIGURE_DIR)
 	@echo "Running compiled programs..."
-	mkdir figure
 	@for target in $(TARGETS); do \
 		echo "Running $$target..."; \
 		./$$target; \
