@@ -18,6 +18,8 @@
 - [第二次作业](./Programming/Chapter1/) 2024.9.24
 - [第三次作业](./Theoretical/Chapter2/) 2024.10.19
 - [第四次作业](./Programming/Chapter2/) 2024.10.28
+- [第五次作业](./Theoretical/Chapter3/) 2024.11.14
+- [第六次作业](./Theoretical/Chapter4/) 2024.11.25
 
 ---
 

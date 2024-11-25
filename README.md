@@ -18,6 +18,8 @@ This repository is for storing the homework for the Numerical Analysis course in
 - [Homework 2](./Programming/Chapter1/) 2024.9.24
 - [Homework 3](./Theoretical/Chapter2/) 2024.10.19
 - [Homework 4](./Programming/Chapter2/) 2024.10.28
+- [Homework 5](./Theoretical/Chapter3/) 2024.11.14
+- [Homework 6](./Theoretical/Chapter4/) 2024.11.25
 
 ---
 
