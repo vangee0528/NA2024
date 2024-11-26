@@ -15,13 +15,13 @@ extern "C" {
 }
 
 // 解三对角线性方程组 Ax = b
-std::vector<double> lapack_solve(const std::vector<double>& diag,
+std::vector<double> lapack_solve_t(const std::vector<double>& diag,
                                  const std::vector<double>& lambda,
                                  const std::vector<double>& mu,
                                  const std::vector<double>& b);
 
 // 解一般线性方程组 Ax = b
-std::vector<double> GaussEliminate(int n,
+std::vector<double> lapack_solve(int n,
                                    const std::vector<std::vector<double>>& A,
                                    const std::vector<double>& b);
 

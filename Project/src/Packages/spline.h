@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include "lapack.h"
 
 // 定义通用函数类
 class MathFunction {
@@ -22,6 +23,7 @@ private:
     std::vector<double> coefficients; // 存储多项式的系数（从低次到高次）
 public:
     Polynomial() {}
+
 
     // 使用系数构造多项式
     Polynomial(const std::vector<double>& coef);
@@ -54,7 +56,7 @@ private:
 public:
     PiecewisePolynomial() {}
     // 通过各段的表达式和分段点构造分段多项式
-    PiecewisePolynomial(const std::vector<Polynomial>&p, const std::vector<double>& x);
+    PiecewisePolynomial(const std::vector<Polynomial>& p, const std::vector<double>& x): polynomials(p), points(x) {}
 
     // 计算分段多项式在 x 点的值
     virtual double evaluate(double x) const;
@@ -71,23 +73,6 @@ public:
     ~PiecewisePolynomial() {}
 };
 
-// 曲线类
-class Curve {
-protected:
-    int dimensions; // 维度
-public:
-    std::vector<MathFunction*> parametric_functions;  // 参数方程
-    // 通过维度构造曲线
-    Curve(int dim) : dimensions(dim) {}
-
-    // 通过各个分段的表达式构造曲线
-    Curve(int dim,const std::vector<MathFunction*>& functions);
-
-    MathFunction operator[](int index) const { return *(parametric_functions[index]); }
-    std::vector<double> operator() (double t) const;
-    virtual ~Curve() {}
-};
-
 // 样条边界条件枚举
 enum SplineBoundaryCondition {
     NO_CONDITION,              // 无边界条件
@@ -99,7 +84,7 @@ enum SplineBoundaryCondition {
 };
 
 // 样条曲线基类
-class Spline : public Curve {
+class Spline{
 private:
     // 计算样条各段多项式
     virtual PiecewisePolynomial compute_spline_segments(SplineBoundaryCondition condition, 
@@ -107,16 +92,17 @@ private:
                                                          const std::vector<double>& nodes, 
                                                          double first_derivative_start, 
                                                          double first_derivative_end) = 0;
-protected:
+    
+public:
+    int dimensions;                            // 样条维数
     int spline_order;                         // 样条阶数
     std::vector<PiecewisePolynomial> segments; // 每段的样条表达式
-public:
-    Spline(int dim, int order) : Curve(dim), spline_order(order) {}
+    Spline(int dim, int order) : dimensions(dim), spline_order(order) {}
     Spline(int dim, int order, const std::vector<PiecewisePolynomial>& spline_segments) 
-        : Curve(dim), spline_order(order), segments(spline_segments) {}
+        : dimensions(dim), spline_order(order), segments(spline_segments) {}
     std::vector<double> operator()(double t) const;
     void print() const;
-    ~Spline() {}
+    virtual ~Spline() {}
 };
 
 // 分段样条类
@@ -128,22 +114,22 @@ private:
                                                  double da, 
                                                  double db);
 public:
-    PPSpline(int dim, int order, const MathFunction& function, 
-                               double range_start, double range_end, 
-                               SplineBoundaryCondition condition = NO_CONDITION, 
-                               int node_count = 100, 
-                               double first_derivative_start = 0.0, 
-                               double first_derivative_end = 0.0); // 均匀节点
+    PPSpline(int dim, int order, const MathFunction& f, 
+                               double a, double d, 
+                               SplineBoundaryCondition bc = NO_CONDITION, 
+                               int N = 100, 
+                               double da = 0.0, 
+                               double db = 0.0); // 均匀节点
 
-    PPSpline(int dim, int order, const MathFunction& function, 
-                               const std::vector<double>& nodes, 
-                               SplineBoundaryCondition condition = NO_CONDITION, 
-                               double first_derivative_start = 0.0, 
-                               double first_derivative_end = 0.0); // 不均匀节点
+    PPSpline(int dim, int order, const MathFunction& f, 
+                               const std::vector<double>& t, 
+                               SplineBoundaryCondition bc = NO_CONDITION, 
+                               double da = 0.0, 
+                               double db = 0.0); // 不均匀节点
 
-    PPSpline(int dim, int order, const std::vector<std::vector<double>>& data_points, 
-                               SplineBoundaryCondition condition = NO_CONDITION);
-    ~PPSpline() {}
+    PPSpline(int dim, int order, const std::vector<std::vector<double>>& points, 
+                               SplineBoundaryCondition bc = NO_CONDITION);
+    virtual ~PPSpline() {}
 };
 
 // B 样条类
@@ -168,10 +154,10 @@ public:
     BSpline(int dim, int order, const MathFunction& f, 
             double a, double b, int N = 100); // 均匀节点
 
-    BSpline(int dim, int order, const MathFunction& function, const std::vector<double>& nodes); // 不均匀节点
+    BSpline(int dim, int order, const MathFunction& f, const std::vector<double>& time_points); // 不均匀节点
 
-    BSpline(int dim, int order, const std::vector<std::vector<double>>& data_points); // 高维散点拟合
-    ~BSpline() {}
+    BSpline(int dim, int order, const std::vector<std::vector<double>>& points); // 高维散点拟合
+    virtual ~BSpline() {}
 };
 
-#endif
+#endif // _SPLINE_H_

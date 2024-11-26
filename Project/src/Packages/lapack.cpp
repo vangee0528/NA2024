@@ -4,7 +4,7 @@
 #include <cstring>
 
 // LAPACK 解三对角矩阵
-std::vector<double> lapack_solve(const std::vector<double>& diag,
+std::vector<double> lapack_solve_t(const std::vector<double>& diag,
                                  const std::vector<double>& lambda,
                                  const std::vector<double>& mu,
                                  const std::vector<double>& b) {
@@ -33,7 +33,7 @@ std::vector<double> lapack_solve(const std::vector<double>& diag,
 }
 
 // LAPACK 解一般线性方程组
-std::vector<double> GaussEliminate(int n,
+std::vector<double> lapack_solve(int n,
                                    const std::vector<std::vector<double>>& A,
                                    const std::vector<double>& b) {
     if (A.size() != n || b.size() != n) {
@@ -41,9 +41,10 @@ std::vector<double> GaussEliminate(int n,
     }
 
     std::vector<double> a_flat(n * n);
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            a_flat[i * n + j] = A[i][j];
+    // 转为列优先顺序
+    for (int j = 0; j < n; ++j) {
+        for (int i = 0; i < n; ++i) {
+            a_flat[j * n + i] = A[i][j];
         }
     }
 
@@ -54,6 +55,7 @@ std::vector<double> GaussEliminate(int n,
     int nrhs = 1;
     int info;
 
+    // 调用 LAPACK 函数
     dgesv_(&n, &nrhs, a_flat.data(), &lda, ipiv.data(), b_copy.data(), &ldb, &info);
 
     if (info > 0) {
