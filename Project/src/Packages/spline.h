@@ -94,8 +94,8 @@ private:
                                                          double first_derivative_end) = 0;
     
 public:
-    int dimensions;                            // 样条维数
-    int spline_order;                         // 样条阶数
+    int dimensions;                             // 空间维度
+    int spline_order;                           // 样条函数的次数即n, k = n - 1
     std::vector<PiecewisePolynomial> segments; // 每段的样条表达式
     Spline(int dim, int order) : dimensions(dim), spline_order(order) {}
     Spline(int dim, int order, const std::vector<PiecewisePolynomial>& spline_segments) 
@@ -117,7 +117,7 @@ public:
     PPSpline(int dim, int order, const MathFunction& f, 
                                double a, double d, 
                                SplineBoundaryCondition bc = NO_CONDITION, 
-                               int N = 100, 
+                               int num_interval = 100, 
                                double da = 0.0, 
                                double db = 0.0); // 均匀节点
 
@@ -150,13 +150,16 @@ private:
 
     // 计算 B 样条基函数 B_i^k 的二阶导数
     double evaluate_basis_second_derivative(int i, int k, double x) const;
+
+    // 计算 B 样条基函数 B_i^k 的三阶导数
+    double evaluate_basis_third_derivative(int i, int k, double x) const;
 public:
     BSpline(int dim, int order, const MathFunction& f, 
-            double a, double b, int N = 100); // 均匀节点
+            double a, double b, int N = 100 ,SplineBoundaryCondition bc = NO_CONDITION); // 均匀节点
 
-    BSpline(int dim, int order, const MathFunction& f, const std::vector<double>& time_points); // 不均匀节点
+    BSpline(int dim, int order, const MathFunction& f, const std::vector<double>& time_points,SplineBoundaryCondition bc = NO_CONDITION); // 不均匀节点
 
-    BSpline(int dim, int order, const std::vector<std::vector<double>>& points); // 高维散点拟合
+    BSpline(int dim, int order, const std::vector<std::vector<double>>& points, SplineBoundaryCondition bc = NO_CONDITION); // 高维散点拟合
     virtual ~BSpline() {}
 };
 

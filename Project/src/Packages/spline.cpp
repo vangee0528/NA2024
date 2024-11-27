@@ -140,29 +140,6 @@ void PiecewisePolynomial :: print () const {
     }
 }
 
-
-////////////////////////////////////////////////////////////////////
-
-/* Curve 类 */
-
-// // 使用参数方程构造曲线
-// Curve :: Curve (int dim, const std :: vector <MathFunction *> &functions) {
-//     this -> dimensions = dim;
-//     if (functions.size () != dimensions)
-//         throw "Curve : Dimension mismatch";
-
-//     for (int i = 0; i < functions.size (); ++ i)
-//         this -> parametric_functions.push_back (functions[i]);
-// }
-
-// // 计算曲线在 t 点的值
-// std :: vector <double> Curve :: operator ()(double t) const {
-//     std :: vector <double> result (dimensions);
-//     for (int i = 0; i < dimensions; ++ i)
-//         result[i] = (*parametric_functions[i]).evaluate (t);
-//     return result;
-// }
-
 ////////////////////////////////////////////////////////////////////
 
 /* Spline 类 */
@@ -186,7 +163,6 @@ void Spline :: print () const {
 
 /* PPSpline 类 */
 
-// 计算分段样条函数
 PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc, const std::vector<double>& f, const std::vector<double>& t, double da, double db) {
     if (spline_order != 1 && spline_order != 3)
         throw "PPSpline : Order Error";
@@ -197,7 +173,7 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
     std::vector<Polynomial> polynomials(num_points - 1);  
 
     if (spline_order == 1) {
-        // 一阶样条函数
+        // 线性样条函数S^0_1
         for (int j = 0; j < num_points - 1; ++j) {
             std::vector<double> x(2), y(2);
             x[0] = t[j]; x[1] = t[j + 1];
@@ -209,7 +185,7 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
         if (bc == NO_CONDITION)
             throw "PPSpline : Boundary condition must be given";
 
-        // 三阶样条函数
+        // 三次样条函数S^2_3
         std::vector<double> first_divided_diff(num_points - 1);  
         for (int i = 0; i < num_points - 1; ++i)
             first_divided_diff[i] = (f[i] - f[i + 1]) / (t[i] - t[i + 1]);
@@ -241,6 +217,16 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
                 B[i] = 6 * second_divided_diff[i];
             B[0] -= da * lambda[0];
             B[num_points - 3] -= db * mu[num_points - 3];
+        } else if (bc == NOT_A_KNOT_CONDITION) {
+            for (int i = 0; i < num_points - 2; ++i)
+                B[i] = 6 * second_divided_diff[i];
+            B[0] = 0;
+            B[num_points - 3] = 0;
+        } else if (bc == PERIODIC_CONDITION) {
+            for (int i = 0; i < num_points - 2; ++i)
+                B[i] = 6 * second_divided_diff[i];
+            B[0] = 0;
+            B[num_points - 3] = 0;
         }
 
         std::vector<double> diagonal(num_points - 2, 2.0); 
@@ -273,12 +259,12 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
                 }
                 polynomials[i] = base;
             }
-        } else if (bc == SECOND_DERIVATIVE_FIXED || bc == NATURAL_SPLINE) {
+        } else if (bc == SECOND_DERIVATIVE_FIXED || bc == NATURAL_SPLINE || bc == NOT_A_KNOT_CONDITION || bc == PERIODIC_CONDITION) {
             std::vector<double> M_extended(num_points);
-            M_extended[0] = bc == NATURAL_SPLINE ? 0 : da;
+            M_extended[0] = (bc == NATURAL_SPLINE || bc == NOT_A_KNOT_CONDITION || bc == PERIODIC_CONDITION) ? 0 : da;
             for (int i = 0; i < num_points - 2; ++i)
                 M_extended[i + 1] = M[i];
-            M_extended[num_points - 1] = bc == NATURAL_SPLINE ? 0 : db;
+            M_extended[num_points - 1] = (bc == NATURAL_SPLINE || bc == NOT_A_KNOT_CONDITION || bc == PERIODIC_CONDITION) ? 0 : db;
 
             for (int i = 0; i < num_points - 1; ++i) {
                 std::vector<double> coefficients(4);
@@ -302,7 +288,7 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
     }
 }
 
-
+// 通过均匀节点构造分段样条
 PPSpline::PPSpline(int dim, int order, const MathFunction &f, double a, double b, SplineBoundaryCondition bc, int num_intervals, double da, double db) : Spline(dim, order) {
     if (a >= b)
         throw "PPSpline: Invalid interval";
@@ -317,9 +303,10 @@ PPSpline::PPSpline(int dim, int order, const MathFunction &f, double a, double b
     this->segments = { compute_spline_segments(bc, function_values, time_points, da, db) };
 }
 
+// 通过不均匀节点构造分段样条(只限二维)
 PPSpline::PPSpline(int dim, int order, const MathFunction &f, const std::vector<double> &time_points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
     if (dim != 1)
-        throw "PPSpline: Dimension must be 1";
+        throw "PPSpline: Dimension must be 2";
     if (time_points.size() <= 1)
         throw "PPSpline: Invalid number of intervals";
     
@@ -329,6 +316,7 @@ PPSpline::PPSpline(int dim, int order, const MathFunction &f, const std::vector<
     this->segments = { compute_spline_segments(bc, function_values, time_points, da, db) };
 }
 
+// 通过散点拟合构造分段样条
 PPSpline::PPSpline(int dim, int order, const std::vector<std::vector<double>> &points, SplineBoundaryCondition bc) : Spline(dim, order) {
     if (points.size() <= 1)
         throw "PPSpline: Invalid number of intervals";
@@ -378,7 +366,12 @@ double BSpline :: evaluate_basis_derivative (int i, int k, double x) const {
 double BSpline :: evaluate_basis_second_derivative (int i, int k, double x) const {
     return k * evaluate_basis_derivative (i, k - 1, x) / (knot_vector[i + k - 1] - knot_vector[i - 1]) - k * evaluate_basis_derivative (i + 1, k - 1, x) / (knot_vector[i + k] - knot_vector[i]);
 }
-// 计算分段样条函数
+
+// 计算 B 样条基函数 B_i^k 的三阶导数
+double BSpline::evaluate_basis_third_derivative(int i, int k, double x) const {
+    return k * evaluate_basis_second_derivative(i, k - 1, x) / (knot_vector[i + k - 1] - knot_vector[i - 1]) - k * evaluate_basis_second_derivative(i + 1, k - 1, x) / (knot_vector[i + k] - knot_vector[i]);
+}
+
 PiecewisePolynomial BSpline::compute_spline_segments(SplineBoundaryCondition bc, const std::vector<double> &function_values, const std::vector<double> &time_points, double da, double db) {
     if (dimensions > 3)
         throw "BSpline: Dimension unsupported";
@@ -401,12 +394,51 @@ PiecewisePolynomial BSpline::compute_spline_segments(SplineBoundaryCondition bc,
                 matrix_A[i][i + j] = evaluate_basis(i + j + 1, spline_order, time_points[i]);
             vector_B[i] = function_values[i];
         }
-        // 默认使用自然边界条件
-        for (int i = 0; i < spline_order; ++i) {
-            matrix_A[num_points][i] = evaluate_basis_second_derivative(i + 1, spline_order, time_points[0]);
-            matrix_A[num_points + 1][num_points - 1 + i] = evaluate_basis_second_derivative(num_points + i, spline_order, time_points[num_points - 1]);
-            vector_B[num_points] = 0;
-            vector_B[num_points + 1] = 0;
+
+        if (bc == NATURAL_SPLINE) {
+            // 自然边界条件
+            for (int i = 0; i < spline_order; ++i) {
+                matrix_A[num_points][i] = evaluate_basis_second_derivative(i + 1, spline_order, time_points[0]);
+                matrix_A[num_points + 1][num_points - 1 + i] = evaluate_basis_second_derivative(num_points + i, spline_order, time_points[num_points - 1]);
+                vector_B[num_points] = 0;
+                vector_B[num_points + 1] = 0;
+            }
+        } else if (bc == CLAMPED) {
+            // 固定边界条件
+            for (int i = 0; i < spline_order; ++i) {
+                matrix_A[num_points][i] = evaluate_basis_derivative(i + 1, spline_order, time_points[0]);
+                matrix_A[num_points + 1][num_points - 1 + i] = evaluate_basis_derivative(num_points + i, spline_order, time_points[num_points - 1]);
+                vector_B[num_points] = da;
+                vector_B[num_points + 1] = db;
+            }
+        } else if (bc == SECOND_DERIVATIVE_FIXED) {
+            // 固定二阶导数边界条件
+            for (int i = 0; i < spline_order; ++i) {
+                matrix_A[num_points][i] = evaluate_basis_second_derivative(i + 1, spline_order, time_points[0]);
+                matrix_A[num_points + 1][num_points - 1 + i] = evaluate_basis_second_derivative(num_points + i, spline_order, time_points[num_points - 1]);
+                vector_B[num_points] = da;
+                vector_B[num_points + 1] = db;
+            }
+        } else if (bc == NOT_A_KNOT_CONDITION) {
+            // 非节点条件
+            for (int i = 0; i < spline_order; ++i) {
+                matrix_A[num_points][i] = evaluate_basis_third_derivative(i + 1, spline_order, time_points[1]);
+                matrix_A[num_points + 1][num_points - 1 + i] = evaluate_basis_third_derivative(num_points + i, spline_order, time_points[num_points - 2]);
+                vector_B[num_points] = 0;
+                vector_B[num_points + 1] = 0;
+            }
+        } else if (bc == PERIODIC_CONDITION) {
+            // 周期边界条件
+            for (int i = 0; i < spline_order; ++i) {
+                matrix_A[num_points][i] = evaluate_basis(i + 1, spline_order, time_points[0]) - evaluate_basis(i + 1, spline_order, time_points[num_points - 1]);
+                matrix_A[num_points + 1][i] = evaluate_basis_derivative(i + 1, spline_order, time_points[0]) - evaluate_basis_derivative(i + 1, spline_order, time_points[num_points - 1]);
+                matrix_A[num_points + 2][i] = evaluate_basis_second_derivative(i + 1, spline_order, time_points[0]) - evaluate_basis_second_derivative(i + 1, spline_order, time_points[num_points - 1]);
+                vector_B[num_points] = 0;
+                vector_B[num_points + 1] = 0;
+                vector_B[num_points + 2] = 0;
+            }
+        } else {
+            throw "BSpline: Unsupported boundary condition";
         }
     } else if (spline_order == 2) {
         matrix_A[0][0] = evaluate_basis(1, spline_order, time_points[0]);
@@ -445,7 +477,7 @@ PiecewisePolynomial BSpline::compute_spline_segments(SplineBoundaryCondition bc,
 }
 
 // 通过均匀节点构造 B 样条
-BSpline::BSpline(int dim, int order, const MathFunction &f, double a, double b, int num_intervals) : Spline(dim, order) {
+BSpline::BSpline(int dim, int order, const MathFunction &f, double a, double b, int num_intervals, SplineBoundaryCondition bc) : Spline(dim, order) {
     if (a >= b)
         throw "BSpline: Invalid interval";
     if (num_intervals <= 1)
@@ -456,24 +488,24 @@ BSpline::BSpline(int dim, int order, const MathFunction &f, double a, double b, 
         time_points[j] = a + (b - a) * j / (num_intervals - 1);
         function_values[j] = f.evaluate(time_points[j]);
     }
-    this->segments = { compute_spline_segments(NO_CONDITION, function_values, time_points, 0, 0) };
+    this->segments = { compute_spline_segments(bc, function_values, time_points, 0, 0) };
 }
 
 // 通过不均匀节点构造 B 样条
-BSpline::BSpline(int dim, int order, const MathFunction &f, const std::vector<double> &time_points) : Spline(dim, order) {
+BSpline::BSpline(int dim, int order, const MathFunction &f, const std::vector<double> &time_points, SplineBoundaryCondition bc) : Spline(dim, order) {
     if (dim != 1)
-        throw "BSpline: Dimension must be 1";
+        throw "BSpline: Dimension must be 2";
     if (time_points.size() <= 1)
         throw "BSpline: Invalid number of intervals";
     
     std::vector<double> function_values(time_points.size());
     for (int j = 0; j < time_points.size(); ++j)
         function_values[j] = f.evaluate(time_points[j]);
-    this->segments = { compute_spline_segments(NO_CONDITION, function_values, time_points, 0, 0) };
+    this->segments = { compute_spline_segments(bc, function_values, time_points, 0, 0) };
 }
 
 // 通过散点拟合构造 B 样条
-BSpline::BSpline(int dim, int order, const std::vector<std::vector<double>> &points) : Spline(dim, order) {
+BSpline::BSpline(int dim, int order, const std::vector<std::vector<double>> &points, SplineBoundaryCondition bc) : Spline(dim, order) {
     if (points.size() <= 1)
         throw "BSpline: Invalid number of intervals";
     if (points[0].size() != dim)
@@ -496,6 +528,6 @@ BSpline::BSpline(int dim, int order, const std::vector<std::vector<double>> &poi
         std::vector<double> function_values;
         for (int j = 0; j < points.size(); ++j)
             function_values.push_back(points[j][i]);
-        this->segments.push_back(compute_spline_segments(NO_CONDITION, function_values, time_points, 0, 0));
+        this->segments.push_back(compute_spline_segments(bc, function_values, time_points, 0, 0));
     }
 }

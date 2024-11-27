@@ -9,7 +9,7 @@ MathFunction f_func (f);
 
 int main () {
     freopen ("output/problemB/cubic.txt", "w", stdout);
-    BSpline cubicSpline (1, 3, f, -1.0, 1.0, 21);
+    BSpline cubicSpline (1, 3, f, -1.0, 1.0, 21, NATURAL_SPLINE);
     cubicSpline.print ();
     fclose (stdout);
     freopen ("output/problemB/quadratic.txt", "w", stdout);

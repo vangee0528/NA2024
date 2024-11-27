@@ -13,7 +13,7 @@ std::vector<int> Ns = {6, 11, 21, 41, 81} ;
 int main () {
     for (int i = 0; i < Ns.size (); ++ i) {
         freopen (("output/problemA/N_" + std :: to_string (Ns [i]) + ".txt").c_str (), "w", stdout);
-        PPSpline spline (1, 3, f_func, -1.0, 1.0, CLAMPED, Ns [i]); // Build a complete cubic spline
+        PPSpline spline (1, 3, f_func, -1.0, 1.0, CLAMPED, Ns [i]); 
         spline.print ();
         double maxError = 0.0;
         for (int j = 0; j < Ns [i] - 1; ++ j) {
