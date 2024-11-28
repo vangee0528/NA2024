@@ -512,7 +512,8 @@ BSpline::BSpline(int dim, int order, const std::vector<std::vector<double>> &poi
         throw "BSpline: Dimension mismatch";
     
     std::vector<double> time_points;
-    
+
+    // 使用累积弦长法生成节点
     time_points.push_back(0);
     double total_distance = 0;
     for (int i = 1; i < points.size(); ++i) {
@@ -523,6 +524,18 @@ BSpline::BSpline(int dim, int order, const std::vector<std::vector<double>> &poi
         total_distance += distance;
         time_points.push_back(total_distance);
     }
+
+    // // 生成等距节点
+    // time_points.push_back(0);
+    // for (int i = 1; i < points.size(); ++i) {
+    //     double distance = 0;
+    //     for (int j = 0; j < points[i].size(); ++j)
+    //         distance += (points[i][j] - points[i - 1][j]) * (points[i][j] - points[i - 1][j]);
+    //     distance = sqrt(distance);
+    //     total_distance += distance;
+    //     time_points.push_back(total_distance);
+    // }
+
 
     for (int i = 0; i < dim; ++i) {
         std::vector<double> function_values;
