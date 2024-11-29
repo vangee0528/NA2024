@@ -10,17 +10,23 @@ double r1y (double t) {
     return 2.0 / 3.0 * (sqrt (sqrt (3) * fabs (cos (t))) + sqrt (3) * sin (t));
 }
 
+MathFunction r1x_func (r1x);
+MathFunction r1y_func (r1y);
+
 int main () {
     std :: vector <int> n = {10, 40, 160};
     for (int i = 0; i < n.size (); ++ i) {
-        PPSpline splineX (1, 3, r1x, -M_PI / 2, M_PI / 2, NATURAL_SPLINE, n [i]);
-        PPSpline splineY (1, 3, r1y, -M_PI / 2, M_PI / 2, NATURAL_SPLINE, n [i]);
-        freopen (("output/problemE/r1x_" + std :: to_string (n [i]) + ".txt").c_str (), "w", stdout);
-        splineX.print ();
+        std::vector<MathFunction> f_v = {r1x_func, r1y_func};
+        PPSpline spline_unit (2, 3, f_v, -M_PI , M_PI, n [i], NATURAL_SPLINE);
+        freopen (("output/problemE/r1_unit_N" + std :: to_string (n [i]) + ".txt").c_str (), "w", stdout);
+        spline_unit.print ();
         fclose (stdout);
-        freopen (("output/problemE/r1y_" + std :: to_string (n [i]) + ".txt").c_str (), "w", stdout);
-        splineY.print ();
+
+        PPSpline spline_chord (2, 3, f_v, -M_PI , M_PI, n [i], NATURAL_SPLINE, 0, 0, "chordal");
+        freopen (("output/problemE/r1_chord_N" + std :: to_string (n [i]) + ".txt").c_str (), "w", stdout);
+        spline_chord.print ();
         fclose (stdout);
+
     }
     return 0;
 }

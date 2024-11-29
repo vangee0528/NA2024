@@ -94,13 +94,13 @@ private:
                                                          double first_derivative_end) = 0;
     
 public:
-    int dimensions;                             // 空间维度
-    int spline_order;                           // 样条函数的次数即n, k = n - 1
-    std::vector<PiecewisePolynomial> segments; // 每段的样条表达式
+    int dimensions;                                 //  维数(为1表示平面上的曲线，为2表示平面上的参数方程，为3表示空间中的曲线)
+    int spline_order;                               //  样条函数的次数即n, k = n - 1
+    std::vector<PiecewisePolynomial> segments;      //  每段的样条表达式
     Spline(int dim, int order) : dimensions(dim), spline_order(order) {}
     Spline(int dim, int order, const std::vector<PiecewisePolynomial>& spline_segments) 
         : dimensions(dim), spline_order(order), segments(spline_segments) {}
-    std::vector<double> operator()(double t) const;
+    std :: vector <double> operator ()(double t) const;
     void print() const;
     virtual ~Spline() {}
 };
@@ -113,22 +113,26 @@ private:
                                                  const std::vector<double>& t, 
                                                  double da, 
                                                  double db);
-public:
-    PPSpline(int dim, int order, const MathFunction& f, 
-                               double a, double d, 
-                               SplineBoundaryCondition bc = NO_CONDITION, 
-                               int num_interval = 100, 
-                               double da = 0.0, 
-                               double db = 0.0); // 均匀节点
 
+
+public:
+    // 任意指定的节点
     PPSpline(int dim, int order, const MathFunction& f, 
                                const std::vector<double>& t, 
                                SplineBoundaryCondition bc = NO_CONDITION, 
                                double da = 0.0, 
-                               double db = 0.0); // 不均匀节点
+                               double db = 0.0); 
 
-    PPSpline(int dim, int order, const std::vector<std::vector<double>>& points, 
-                               SplineBoundaryCondition bc = NO_CONDITION);
+    // 任意维数 均匀节点/累积弦长法选点
+    PPSpline(int dim, int order, const std::vector<MathFunction>& f, 
+                                double a, double b, int num_intervals,
+                               SplineBoundaryCondition bc = NO_CONDITION,
+                               double da = 0.0, 
+                               double db = 0.0,
+                               const std::string& method = "uniform" // 默认均匀节点
+                               ); 
+
+
     virtual ~PPSpline() {}
 };
 
@@ -153,13 +157,14 @@ private:
 
     // 计算 B 样条基函数 B_i^k 的三阶导数
     double evaluate_basis_third_derivative(int i, int k, double x) const;
+
 public:
-    BSpline(int dim, int order, const MathFunction& f, 
-            double a, double b, int N = 100 ,SplineBoundaryCondition bc = NO_CONDITION); // 均匀节点
+    // 通过指定的不均匀节点构造 B 样条
+    BSpline(int dim, int order, const std::vector<MathFunction>& f, const std::vector<double>& time_points, SplineBoundaryCondition bc = NO_CONDITION, double da = 0.0, double db = 0.0);
 
-    BSpline(int dim, int order, const MathFunction& f, const std::vector<double>& time_points,SplineBoundaryCondition bc = NO_CONDITION); // 不均匀节点
+    // 任意维数 （默认等距节点或累积弦长法）
+    BSpline(int dim, int order, const std::vector<MathFunction>& f, double a, double b, int num_intervals, SplineBoundaryCondition bc = NO_CONDITION, double da = 0.0, double db = 0.0, const std::string& method = "uniform");
 
-    BSpline(int dim, int order, const std::vector<std::vector<double>>& points, SplineBoundaryCondition bc = NO_CONDITION); // 高维散点拟合
     virtual ~BSpline() {}
 };
 

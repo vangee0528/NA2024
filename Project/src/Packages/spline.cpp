@@ -144,20 +144,27 @@ void PiecewisePolynomial :: print () const {
 
 /* Spline 类 */
 
+
+// 输出曲线公式
+void Spline :: print () const {
+    std::vector<std::string> names = {"x", "y", "z"};
+    for (int i = 0; i < dimensions; ++ i) {
+        if(dimensions > 1 && dimensions <= 3){
+        std::cout<<names[i]<<"(t) = " <<std::endl;
+        }else if(dimensions > 3){
+            std::cout<<"x_"<<i<<"(t) = "<<std::endl;
+        }
+        (this ->segments[i]).print ();
+    }
+}
+
+// 重载括号运算符
 std::vector<double> Spline::operator()(double t) const{
     std::vector<double> result(dimensions);
     for (int i = 0; i < dimensions; ++i)
         result[i] = (this ->segments[i]).evaluate(t);
     return result;
 }
-
-// 输出曲线公式
-void Spline :: print () const {
-    for (int i = 0; i < dimensions; ++ i) {
-        (this ->segments[i]).print ();
-    }
-}
-
 
 ////////////////////////////////////////////////////////////////////
 
@@ -288,25 +295,45 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
     }
 }
 
-// 通过均匀节点构造分段样条
-PPSpline::PPSpline(int dim, int order, const MathFunction &f, double a, double b, SplineBoundaryCondition bc, int num_intervals, double da, double db) : Spline(dim, order) {
-    if (a >= b)
-        throw "PPSpline: Invalid interval";
-    if (num_intervals <= 1)
-        throw "PPSpline: Invalid number of intervals";
-    
-    std::vector<double> time_points(num_intervals), function_values(num_intervals);
-    for (int j = 0; j < num_intervals; ++j) {
-        time_points[j] = a + (b - a) * j / (num_intervals - 1);
-        function_values[j] = f.evaluate(time_points[j]);
+// 计算累积弦长
+std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vector<double>> &points) {
+    std::vector<double> time_points;
+    time_points.push_back(0);
+    double total_distance = 0;
+    for (int i = 1; i < points.size(); ++i) {
+        double distance = 0;
+        for (int j = 0; j < points[i].size(); ++j)
+            distance += (points[i][j] - points[i - 1][j]) * (points[i][j] - points[i - 1][j]);
+        distance = std::sqrt(distance);
+        total_distance += distance;
+        time_points.push_back(total_distance);
     }
-    this->segments = { compute_spline_segments(bc, function_values, time_points, da, db) };
+    return time_points;
 }
 
-// 通过不均匀节点构造分段样条(只限二维)
+// 根据累积弦长等比例选取分点
+std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_points) {
+    double total_length = cumulative_lengths.back();
+    std::vector<double> selected_points(num_points);
+    
+    for (int i = 0; i < num_points; ++i) {
+        double target_length = total_length * i / (num_points - 1);
+        for (int j = 1; j < cumulative_lengths.size(); ++j) {
+            if (cumulative_lengths[j] >= target_length) {
+                double t = (target_length - cumulative_lengths[j - 1]) / (cumulative_lengths[j] - cumulative_lengths[j - 1]);
+                selected_points[i] = function_values[j - 1] + t * (function_values[j] - function_values[j - 1]);
+                break;
+            }
+        }
+    }
+    return selected_points;
+}
+
+
+// 通过指定的不均匀节点构造分段样条
 PPSpline::PPSpline(int dim, int order, const MathFunction &f, const std::vector<double> &time_points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
     if (dim != 1)
-        throw "PPSpline: Dimension must be 2";
+        throw "PPSpline: Dimension must be 1";
     if (time_points.size() <= 1)
         throw "PPSpline: Invalid number of intervals";
     
@@ -316,32 +343,47 @@ PPSpline::PPSpline(int dim, int order, const MathFunction &f, const std::vector<
     this->segments = { compute_spline_segments(bc, function_values, time_points, da, db) };
 }
 
-// 通过散点拟合构造分段样条
-PPSpline::PPSpline(int dim, int order, const std::vector<std::vector<double>> &points, SplineBoundaryCondition bc) : Spline(dim, order) {
-    if (points.size() <= 1)
-        throw "PPSpline: Invalid number of intervals";
-    if (points[0].size() != dim)
-        throw "PPSpline: Dimension mismatch";
-    
-    std::vector<double> time_points;
-
-    time_points.push_back(0);
-    for (int i = 1; i < points.size(); ++i) {
-        double distance = 0;
-        static double total_distance = 0;
-        for (int j = 0; j < points[i].size(); ++j)
-            distance += (points[i][j] - points[i - 1][j]) * (points[i][j] - points[i - 1][j]);
-        distance = sqrt(distance);
-        total_distance += distance;
-        time_points.push_back(total_distance);
+// 任意维数 （默认等距节点）
+PPSpline::PPSpline(int dim, int order, const std::vector<MathFunction>& f, double a, double b, int num_intervals, SplineBoundaryCondition bc, double da , double db, const std::string& method) : Spline(dim, order) {
+    if(f.size() != dim){
+        throw "PPSpline: Number of functions must equal to dimension";
     }
 
-    for (int i = 0; i < dim; ++i) {
-        std::vector<double> function_values;
-        for (int j = 0; j < points.size(); ++j)
-            function_values.push_back(points[j][i]);
-        this->segments.push_back(compute_spline_segments(bc, function_values, time_points, 0.0, 0.0));
+    if(a >= b){
+        throw "PPSpline: Invalid interval";
     }
+
+    if (method == "uniform"){
+            for (MathFunction func : f){
+                std::vector<double> time_points(num_intervals), function_values(num_intervals);
+                for (int j = 0; j < num_intervals; ++j) {
+                    time_points[j] = a + (b - a) * j / (num_intervals - 1);
+                    function_values[j] = func.evaluate(time_points[j]);
+                }
+            this->segments.push_back(compute_spline_segments(bc, function_values, time_points, da, db));
+        }
+    }else if (method == "chordal") {
+        std::vector<std::vector<double>> points(num_intervals, std::vector<double>(dim));
+        for (int i = 0; i < num_intervals; ++i) {
+            double t = a + (b - a) * i / (num_intervals - 1);
+            for (int j = 0; j < dim; ++j) {
+                points[i][j] = f[j].evaluate(t);
+            }
+        }
+        std::vector<double> cumulative_lengths = compute_cumulative_chordal_length(points);
+        for (int i = 0; i < dim; ++i) {
+            std::vector<double> function_values(num_intervals);
+            for (int j = 0; j < num_intervals; ++j) {
+                function_values[j] = points[j][i];
+            }
+            std::vector<double> selected_points = select_points(function_values, cumulative_lengths, num_intervals);
+            this->segments.push_back(compute_spline_segments(bc, selected_points, cumulative_lengths, da, db));
+        }
+    } else {
+        throw "PPSpline: Unknown method";
+    }
+
+
 }
 
 
@@ -476,71 +518,65 @@ PiecewisePolynomial BSpline::compute_spline_segments(SplineBoundaryCondition bc,
     return PiecewisePolynomial(polynomials, time_points);
 }
 
-// 通过均匀节点构造 B 样条
-BSpline::BSpline(int dim, int order, const MathFunction &f, double a, double b, int num_intervals, SplineBoundaryCondition bc) : Spline(dim, order) {
-    if (a >= b)
-        throw "BSpline: Invalid interval";
-    if (num_intervals <= 1)
-        throw "BSpline: Invalid number of intervals";
-    
-    std::vector<double> time_points(num_intervals), function_values(num_intervals);
-    for (int j = 0; j < num_intervals; ++j) {
-        time_points[j] = a + (b - a) * j / (num_intervals - 1);
-        function_values[j] = f.evaluate(time_points[j]);
+// 通过指定的不均匀节点构造 B 样条
+BSpline::BSpline(int dim, int order, const std::vector<MathFunction>& f, const std::vector<double>& time_points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
+    if (f.size() != dim) {
+        throw "BSpline: Number of functions must equal to dimension";
     }
-    this->segments = { compute_spline_segments(bc, function_values, time_points, 0, 0) };
-}
-
-// 通过不均匀节点构造 B 样条
-BSpline::BSpline(int dim, int order, const MathFunction &f, const std::vector<double> &time_points, SplineBoundaryCondition bc) : Spline(dim, order) {
-    if (dim != 1)
-        throw "BSpline: Dimension must be 2";
-    if (time_points.size() <= 1)
+    if (time_points.size() <= 1) {
         throw "BSpline: Invalid number of intervals";
-    
-    std::vector<double> function_values(time_points.size());
-    for (int j = 0; j < time_points.size(); ++j)
-        function_values[j] = f.evaluate(time_points[j]);
-    this->segments = { compute_spline_segments(bc, function_values, time_points, 0, 0) };
-}
-
-// 通过散点拟合构造 B 样条
-BSpline::BSpline(int dim, int order, const std::vector<std::vector<double>> &points, SplineBoundaryCondition bc) : Spline(dim, order) {
-    if (points.size() <= 1)
-        throw "BSpline: Invalid number of intervals";
-    if (points[0].size() != dim)
-        throw "BSpline: Dimension mismatch";
-    
-    std::vector<double> time_points;
-
-    // 使用累积弦长法生成节点
-    time_points.push_back(0);
-    double total_distance = 0;
-    for (int i = 1; i < points.size(); ++i) {
-        double distance = 0;
-        for (int j = 0; j < points[i].size(); ++j)
-            distance += (points[i][j] - points[i - 1][j]) * (points[i][j] - points[i - 1][j]);
-        distance = sqrt(distance);
-        total_distance += distance;
-        time_points.push_back(total_distance);
     }
-
-    // // 生成等距节点
-    // time_points.push_back(0);
-    // for (int i = 1; i < points.size(); ++i) {
-    //     double distance = 0;
-    //     for (int j = 0; j < points[i].size(); ++j)
-    //         distance += (points[i][j] - points[i - 1][j]) * (points[i][j] - points[i - 1][j]);
-    //     distance = sqrt(distance);
-    //     total_distance += distance;
-    //     time_points.push_back(total_distance);
-    // }
-
 
     for (int i = 0; i < dim; ++i) {
-        std::vector<double> function_values;
-        for (int j = 0; j < points.size(); ++j)
-            function_values.push_back(points[j][i]);
-        this->segments.push_back(compute_spline_segments(bc, function_values, time_points, 0, 0));
+        std::vector<double> function_values(time_points.size());
+        for (int j = 0; j < time_points.size(); ++j) {
+            function_values[j] = f[i].evaluate(time_points[j]);
+        }
+        this->segments.push_back(compute_spline_segments(bc, function_values, time_points, da, db));
+    }
+}
+
+// 任意维数 （默认等距节点或累积弦长法）
+BSpline::BSpline(int dim, int order, const std::vector<MathFunction>& f, double a, double b, int num_intervals, SplineBoundaryCondition bc, double da, double db, const std::string& method) : Spline(dim, order) {
+    if (f.size() != dim) {
+        throw "BSpline: Number of functions must equal to dimension";
+    }
+
+    if (a >= b) {
+        throw "BSpline: Invalid interval";
+    }
+
+    if (method == "uniform") {
+        std::vector<double> time_points(num_intervals);
+        for (int i = 0; i < num_intervals; ++i) {
+            time_points[i] = a + (b - a) * i / (num_intervals - 1);
+        }
+
+        for (int i = 0; i < dim; ++i) {
+            std::vector<double> function_values(num_intervals);
+            for (int j = 0; j < num_intervals; ++j) {
+                function_values[j] = f[i].evaluate(time_points[j]);
+            }
+            this->segments.push_back(compute_spline_segments(bc, function_values, time_points, da, db));
+        }
+    } else if (method == "chordal") {
+        std::vector<std::vector<double>> points(num_intervals, std::vector<double>(dim));
+        for (int i = 0; i < num_intervals; ++i) {
+            double t = a + (b - a) * i / (num_intervals - 1);
+            for (int j = 0; j < dim; ++j) {
+                points[i][j] = f[j].evaluate(t);
+            }
+        }
+        std::vector<double> cumulative_lengths = compute_cumulative_chordal_length(points);
+        for (int i = 0; i < dim; ++i) {
+            std::vector<double> function_values(num_intervals);
+            for (int j = 0; j < num_intervals; ++j) {
+                function_values[j] = points[j][i];
+            }
+            std::vector<double> selected_points = select_points(function_values, cumulative_lengths, num_intervals);
+            this->segments.push_back(compute_spline_segments(bc, selected_points, cumulative_lengths, da, db));
+        }
+    } else {
+        throw "BSpline: Unknown method";
     }
 }

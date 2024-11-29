@@ -15,7 +15,7 @@ all:
 	python3 src/ProblemD/plotD.py
 	g++ src/ProblemE/ProblemE.cpp src/Packages/spline.cpp src/Packages/lapack.cpp -o release/ProblemE.o -llapack -lblas
 	release/ProblemE.o
-	python3 src/ProblemE/plotE.py
+	python3 src/ProblemE/plotE_R1.py
 clean:
 	rm -f release/*.o
 	rm -f figure/problemA/*.png
