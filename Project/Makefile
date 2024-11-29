@@ -6,7 +6,7 @@ all:
 	python3 src/ProblemA/plotA.py
 	g++ src/ProblemB/ProblemB.cpp src/Packages/spline.cpp src/Packages/lapack.cpp -o release/ProblemB.o -llapack -lblas
 	release/ProblemB.o
-	python3 src/ProblemA/plotA.py
+	python3 src/ProblemB/plotB.py
 	g++ src/ProblemC/ProblemC.cpp src/Packages/spline.cpp src/Packages/lapack.cpp -o release/ProblemC.o -llapack -lblas
 	release/ProblemC.o
 	python3 src/ProblemC/plotC.py
@@ -20,3 +20,11 @@ clean:
 	rm -f release/*.o
 	rm -f figure/problemA/*.png
 	rm -f output/problemA/*.txt
+	rm -f figure/problemB/*.png
+	rm -f output/problemB/*.txt
+	rm -f figure/problemC/*.png
+	rm -f output/problemC/*.txt
+	rm -f figure/problemD/*.png
+	rm -f output/problemD/*.txt
+	rm -f figure/problemE/*.png
+	rm -f output/problemE/*.txt

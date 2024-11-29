@@ -65,6 +65,7 @@ def plot_polynomial(polynomials, label, output_file):
     plt.title(f'Parametric Curve {label}')
     plt.legend()
     plt.savefig(output_file)
+    print("Successfully saved", output_file)
     plt.close()
 
 def main():

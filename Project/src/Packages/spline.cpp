@@ -295,41 +295,6 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
     }
 }
 
-// 计算累积弦长
-std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vector<double>> &points) {
-    std::vector<double> time_points;
-    time_points.push_back(0);
-    double total_distance = 0;
-    for (int i = 1; i < points.size(); ++i) {
-        double distance = 0;
-        for (int j = 0; j < points[i].size(); ++j)
-            distance += (points[i][j] - points[i - 1][j]) * (points[i][j] - points[i - 1][j]);
-        distance = std::sqrt(distance);
-        total_distance += distance;
-        time_points.push_back(total_distance);
-    }
-    return time_points;
-}
-
-// 根据累积弦长等比例选取分点
-std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_points) {
-    double total_length = cumulative_lengths.back();
-    std::vector<double> selected_points(num_points);
-    
-    for (int i = 0; i < num_points; ++i) {
-        double target_length = total_length * i / (num_points - 1);
-        for (int j = 1; j < cumulative_lengths.size(); ++j) {
-            if (cumulative_lengths[j] >= target_length) {
-                double t = (target_length - cumulative_lengths[j - 1]) / (cumulative_lengths[j] - cumulative_lengths[j - 1]);
-                selected_points[i] = function_values[j - 1] + t * (function_values[j] - function_values[j - 1]);
-                break;
-            }
-        }
-    }
-    return selected_points;
-}
-
-
 // 通过指定的不均匀节点构造分段样条
 PPSpline::PPSpline(int dim, int order, const MathFunction &f, const std::vector<double> &time_points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
     if (dim != 1)
@@ -579,4 +544,43 @@ BSpline::BSpline(int dim, int order, const std::vector<MathFunction>& f, double 
     } else {
         throw "BSpline: Unknown method";
     }
+}
+
+////////////////////////////////////////////////////////////////////
+
+/*其他辅助函数*/
+
+
+// 计算累积弦长
+std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vector<double>> &points) {
+    std::vector<double> time_points;
+    time_points.push_back(0);
+    double total_distance = 0;
+    for (int i = 1; i < points.size(); ++i) {
+        double distance = 0;
+        for (int j = 0; j < points[i].size(); ++j)
+            distance += (points[i][j] - points[i - 1][j]) * (points[i][j] - points[i - 1][j]);
+        distance = std::sqrt(distance);
+        total_distance += distance;
+        time_points.push_back(total_distance);
+    }
+    return time_points;
+}
+
+// 根据累积弦长等比例选取分点
+std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_points) {
+    double total_length = cumulative_lengths.back();
+    std::vector<double> selected_points(num_points);
+    
+    for (int i = 0; i < num_points; ++i) {
+        double target_length = total_length * i / (num_points - 1);
+        for (int j = 1; j < cumulative_lengths.size(); ++j) {
+            if (cumulative_lengths[j] >= target_length) {
+                double t = (target_length - cumulative_lengths[j - 1]) / (cumulative_lengths[j] - cumulative_lengths[j - 1]);
+                selected_points[i] = function_values[j - 1] + t * (function_values[j] - function_values[j - 1]);
+                break;
+            }
+        }
+    }
+    return selected_points;
 }

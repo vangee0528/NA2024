@@ -6,7 +6,8 @@
 #include <cmath>
 #include "lapack.h"
 
-// 定义通用函数类
+
+/* 函数类 */
 class MathFunction {
 private:
     double (*function_ptr)(double x);
@@ -17,13 +18,13 @@ public:
     virtual ~MathFunction() {}
 };
 
-// 定义多项式类
+
+/* 多项式类 */
 class Polynomial : public MathFunction {
 private:
     std::vector<double> coefficients; // 存储多项式的系数（从低次到高次）
 public:
     Polynomial() {}
-
 
     // 使用系数构造多项式
     Polynomial(const std::vector<double>& coef);
@@ -48,7 +49,8 @@ public:
     virtual ~Polynomial() {}
 };
 
-// 分段多项式类
+
+/* 分段多项式类 */
 class PiecewisePolynomial : public MathFunction {
 private:
     std::vector<double> points;       // 各分段的起点
@@ -73,7 +75,7 @@ public:
     ~PiecewisePolynomial() {}
 };
 
-// 样条边界条件枚举
+// 样条边界条件
 enum SplineBoundaryCondition {
     NO_CONDITION,              // 无边界条件
     CLAMPED,                   // 完全三次样条: s'(f;a) = f'(a) 且 s'(f;b) = f'(b)
@@ -83,7 +85,8 @@ enum SplineBoundaryCondition {
     PERIODIC_CONDITION         // 周期边界条件: s(f;b) = s(f;a) 且 s'(f;b) = s'(f;a) 且 s''(f;b) = s''(f;a)
 };
 
-// 样条曲线基类
+
+/* 样条曲线基类 */
 class Spline{
 private:
     // 计算样条各段多项式
@@ -105,7 +108,8 @@ public:
     virtual ~Spline() {}
 };
 
-// 分段样条类
+
+/* PP 样条类 */
 class PPSpline : public Spline {
 private:
     PiecewisePolynomial compute_spline_segments(SplineBoundaryCondition bc, 
@@ -121,7 +125,8 @@ public:
                                const std::vector<double>& t, 
                                SplineBoundaryCondition bc = NO_CONDITION, 
                                double da = 0.0, 
-                               double db = 0.0); 
+                               double db = 0.0
+                               ); 
 
     // 任意维数 均匀节点/累积弦长法选点
     PPSpline(int dim, int order, const std::vector<MathFunction>& f, 
@@ -136,14 +141,16 @@ public:
     virtual ~PPSpline() {}
 };
 
-// B 样条类
+
+/* B 样条类 */
 class BSpline : public Spline {
 private:
     PiecewisePolynomial compute_spline_segments(SplineBoundaryCondition bc, 
                                                  const std::vector<double>& f,
                                                  const std::vector<double>& t, 
                                                  double da, 
-                                                 double db);
+                                                 double db
+                                                 );
     std::vector<double> knot_vector; // 节点向量
 
     // 计算 B 样条基函数 B_i^k 的值
@@ -160,12 +167,29 @@ private:
 
 public:
     // 通过指定的不均匀节点构造 B 样条
-    BSpline(int dim, int order, const std::vector<MathFunction>& f, const std::vector<double>& time_points, SplineBoundaryCondition bc = NO_CONDITION, double da = 0.0, double db = 0.0);
+    BSpline(int dim, int order, const std::vector<MathFunction>& f, 
+                                const std::vector<double>& time_points, 
+                                SplineBoundaryCondition bc = NO_CONDITION, 
+                                double da = 0.0, 
+                                double db = 0.0
+                                );
 
     // 任意维数 （默认等距节点或累积弦长法）
-    BSpline(int dim, int order, const std::vector<MathFunction>& f, double a, double b, int num_intervals, SplineBoundaryCondition bc = NO_CONDITION, double da = 0.0, double db = 0.0, const std::string& method = "uniform");
+    BSpline(int dim, int order,  const std::vector<MathFunction>& f,
+                                 double a, double b, int num_intervals, 
+                                 SplineBoundaryCondition bc = NO_CONDITION, 
+                                 double da = 0.0, 
+                                 double db = 0.0, 
+                                 const std::string& method = "uniform"
+                                 );
 
     virtual ~BSpline() {}
 };
 
+
+/* 其他辅助函数 */
+// 计算累积弦长
+std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vector<double>> &points);
+// 根据累积弦长等比例选取分点
+std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_points);
 #endif // _SPLINE_H_
