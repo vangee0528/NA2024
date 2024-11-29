@@ -72,5 +72,11 @@ int main() {
             }
         }
 
+        // 使用一个B样条来验证在相同的边界条件和节点时，PPSpline 和 BSpline 是否会得到相同的结果
+        BSpline spline_compared(fvs[0].size(), 3, fvs[0], segs[0][0], segs[0][1], n[0], NATURAL_SPLINE);
+        freopen("output/problemE/r1_unit_N10_Bspline.txt", "w", stdout);
+        spline_compared.print();
+        fclose(stdout);
+
     return 0;
 }

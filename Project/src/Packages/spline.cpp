@@ -296,16 +296,21 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
 }
 
 // 通过指定的不均匀节点构造分段样条
-PPSpline::PPSpline(int dim, int order, const MathFunction &f, const std::vector<double> &time_points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
-    if (dim != 1)
-        throw "PPSpline: Dimension must be 1";
-    if (time_points.size() <= 1)
+PPSpline::PPSpline(int dim, int order, const std::vector<MathFunction>& f, const std::vector<double>& time_points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
+    if (f.size() != dim) {
+        throw "PPSpline: Number of functions must equal to dimension";
+    }
+    if (time_points.size() <= 1) {
         throw "PPSpline: Invalid number of intervals";
-    
-    std::vector<double> function_values(time_points.size());
-    for(int j = 0; j < time_points.size(); ++j)
-        function_values[j] = f.evaluate(time_points[j]);
-    this->segments = { compute_spline_segments(bc, function_values, time_points, da, db) };
+    }
+
+    for (int i = 0; i < dim; ++i) {
+        std::vector<double> function_values(time_points.size());
+        for (int j = 0; j < time_points.size(); ++j) {
+            function_values[j] = f[i].evaluate(time_points[j]);
+        }
+        this->segments.push_back(compute_spline_segments(bc, function_values, time_points, da, db));
+    }
 }
 
 // 任意维数 （默认等距节点）
@@ -437,12 +442,10 @@ PiecewisePolynomial BSpline::compute_spline_segments(SplineBoundaryCondition bc,
         } else if (bc == PERIODIC_CONDITION) {
             // 周期边界条件
             for(int i = 0; i < spline_order; ++i) {
-                matrix_A[num_points][i] = evaluate_basis(i + 1, spline_order, time_points[0]) - evaluate_basis(i + 1, spline_order, time_points[num_points - 1]);
-                matrix_A[num_points + 1][i] = evaluate_basis_derivative(i + 1, spline_order, time_points[0]) - evaluate_basis_derivative(i + 1, spline_order, time_points[num_points - 1]);
-                matrix_A[num_points + 2][i] = evaluate_basis_second_derivative(i + 1, spline_order, time_points[0]) - evaluate_basis_second_derivative(i + 1, spline_order, time_points[num_points - 1]);
+                matrix_A[num_points][i] = evaluate_basis_second_derivative(i + 1, spline_order, time_points[0]);
+                matrix_A[num_points + 1][num_points - 1 + i] = evaluate_basis_second_derivative(num_points + i, spline_order, time_points[num_points - 1]);
                 vector_B[num_points] = 0;
                 vector_B[num_points + 1] = 0;
-                vector_B[num_points + 2] = 0;
             }
         } else {
             throw "BSpline: Unsupported boundary condition";
@@ -584,3 +587,4 @@ std::vector<double> select_points(const std::vector<double> &function_values, co
     }
     return selected_points;
 }
+

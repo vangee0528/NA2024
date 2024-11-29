@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import sys
+from datetime import datetime
 
 def read_data(file_path):
     with open(file_path, 'r') as file:
@@ -20,13 +22,8 @@ def read_data(file_path):
 def original_function(x):
     return 1 / (1 + 25 * x**2)
 
-def plot_polynomials(intervals, polynomials, output_path, type):
+def plot_polynomials(intervals, polynomials, output_path):
     plt.figure()
-    
-    # 绘制原函数
-    x = np.linspace(-1, 1, 1000)
-    y = original_function(x)
-    plt.plot(x, y, 'k--', label='Original function')
     
     # 绘制拟合多项式
     for interval, coeffs in zip(intervals, polynomials):
@@ -36,12 +33,11 @@ def plot_polynomials(intervals, polynomials, output_path, type):
     
     plt.xlabel('x')
     plt.ylabel('y')
-    plt.title('Piecewise Polynomial Plot with type = {}'.format(type))
     plt.grid(True)
+ 
     plt.savefig(output_path)
     plt.close()
 
-from datetime import datetime
 def log_message(message):
     log_file = 'logs/log.txt'
     timestamp = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
@@ -49,22 +45,25 @@ def log_message(message):
         log.write(f'{timestamp} : {message}\n')
 
 def main():
-    input_dir = './output/problemB'
-    output_dir = './figure/problemB'
-    types = ['cubic', 'quadratic']
+    if len(sys.argv) != 2:
+        print("Usage: python3 src/Check/plot.py <input_file>")
+        sys.exit(1)
     
+    input_file = sys.argv[1]
+    if not os.path.exists(input_file):
+        print(f"File {input_file} does not exist.")
+        sys.exit(1)
+    
+    output_dir = './figure/check'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    for plot_type in types:
-        input_file = os.path.join(input_dir, f'{plot_type}.txt')
-        output_file = os.path.join(output_dir, f'{plot_type}.png')
-        
-        log_message(f'Reading data from {input_file}')
-        intervals, polynomials = read_data(input_file)
-        log_message(f'Plotting data and saving to {output_file}')
-        plot_polynomials(intervals, polynomials, output_file, plot_type)
-        log_message(f'Successfully saved {output_file}')
+    file_name = os.path.basename(input_file)
+    output_file = os.path.join(output_dir, file_name.replace('.txt', '.png'))
+    
+    intervals, polynomials = read_data(input_file)
+    plot_polynomials(intervals, polynomials, output_file)
+    log_message(f'Successfully saved {output_file}')
 
 if __name__ == '__main__':
     main()

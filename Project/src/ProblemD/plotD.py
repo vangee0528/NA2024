@@ -41,6 +41,13 @@ def plot_polynomials(intervals, polynomials, output_path, type):
     plt.savefig(output_path)
     plt.close()
 
+from datetime import datetime
+def log_message(message):
+    log_file = 'logs/log.txt'
+    timestamp = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+    with open(log_file, 'a') as log:
+        log.write(f'{timestamp} : {message}\n')
+        
 def main():
     input_dir = './output/problemD'
     output_dir = './figure/problemD'
@@ -55,7 +62,7 @@ def main():
         
         intervals, polynomials = read_data(input_file)
         plot_polynomials(intervals, polynomials, output_file, type)
-        print(f'Successfully saved {output_file}')
+        log_message(f'Successfully saved {output_file}')
 
 if __name__ == '__main__':
     main()

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
 
 def read_data(file_path):
     with open(file_path, 'r') as file:
@@ -41,6 +42,12 @@ def plot_polynomials(intervals, polynomials, output_path, N):
     plt.savefig(output_path)
     plt.close()
 
+def log_message(message):
+    log_file = 'logs/log.txt'
+    timestamp = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+    with open(log_file, 'a') as log:
+        log.write(f'{timestamp} : {message}\n')
+
 def main():
     input_dir = './output/problemA'
     output_dir = './figure/problemA'
@@ -55,7 +62,7 @@ def main():
         
         intervals, polynomials = read_data(input_file)
         plot_polynomials(intervals, polynomials, output_file, N)
-        print(f'Successfully saved {output_file}')
+        log_message(f'Successfully saved {output_file}')
 
 if __name__ == '__main__':
     main()

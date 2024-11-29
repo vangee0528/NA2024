@@ -1,6 +1,7 @@
 #ifndef _SPLINE_H_
 #define _SPLINE_H_
-
+#include <fstream>
+#include <ctime>
 #include <vector>
 #include <iostream>
 #include <cmath>
@@ -121,7 +122,7 @@ private:
 
 public:
     // 任意指定的节点
-    PPSpline(int dim, int order, const MathFunction& f, 
+    PPSpline(int dim, int order, const std::vector<MathFunction>& f, 
                                const std::vector<double>& t, 
                                SplineBoundaryCondition bc = NO_CONDITION, 
                                double da = 0.0, 
@@ -192,4 +193,6 @@ public:
 std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vector<double>> &points);
 // 根据累积弦长等比例选取分点
 std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_points);
+
+
 #endif // _SPLINE_H_

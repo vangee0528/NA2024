@@ -98,7 +98,7 @@ def plot_polynomial(k, polynomials, label, output_file):
         plt.title(f'Parametric Curve {label}')
         plt.legend()
         plt.savefig(output_file)
-        print("Successfully saved", output_file)
+        log_message("Successfully saved"+output_file)
         plt.close()
 
     else:
@@ -110,10 +110,18 @@ def plot_polynomial(k, polynomials, label, output_file):
         plt.title(f'Parametric Curve {label}')
         plt.legend()
         plt.savefig(output_file)
-        print("Successfully saved", output_file)
+        log_message("Successfully saved"+ output_file)
         plt.close()
 
+from datetime import datetime
+def log_message(message):
+    log_file = 'logs/log.txt'
+    timestamp = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+    with open(log_file, 'a') as log:
+        log.write(f'{timestamp} : {message}\n')
+
 def main():
+    # 读取并绘制之前的曲线
     curve_name = [1, 2, 3]
     N_name = ['N10', 'N40', 'N160']
     type_name = ['unit', 'chord']
@@ -121,7 +129,7 @@ def main():
 
     files = [[f'{prefix}{curve}_{type}_{N}.txt', curve] for curve in curve_name for N in N_name for type in type_name]
     output_dir = 'figure/problemE'
-    
+
     os.makedirs(output_dir, exist_ok=True)
     
     for file, curve_num in files:
@@ -131,7 +139,7 @@ def main():
             output_file = os.path.join(output_dir, f'{label}.png')
             plot_polynomial(curve_num, polynomials, label, output_file)
         else:
-            print(f"File {file} does not exist.")
+            log_message(f"File {file} does not exist.")
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,10 @@
 # 关闭输出命令
 .SILENT:
 all:
+# 重命名原先的logs/log.txt
+	if [ -f logs/log.txt ]; then mv logs/log.txt logs/log_`date +%m_%d_%H:%M`.txt; fi
+# 向logs/log.txt中输出当前时间以及编译信息,不删除原先的内容
+	echo "Make Time: `date`" > logs/log.txt
 	g++ src/ProblemA/ProblemA.cpp src/Packages/spline.cpp src/Packages/lapack.cpp -o release/ProblemA.o -llapack -lblas
 	release/ProblemA.o
 	python3 src/ProblemA/plotA.py
@@ -15,8 +19,12 @@ all:
 	python3 src/ProblemD/plotD.py
 	g++ src/ProblemE/ProblemE.cpp src/Packages/spline.cpp src/Packages/lapack.cpp -o release/ProblemE.o -llapack -lblas
 	release/ProblemE.o
-	python3 src/ProblemE/plotE_R1.py
+	python3 src/ProblemE/plotE.py
+	g++ src/Check/check.cpp src/Packages/spline.cpp src/Packages/lapack.cpp -o release/check.o -llapack -lblas
+	release/check.o
 clean:
+# 向logs/log.txt中输出当前时间
+	echo "Clean Time: `date`" >> logs/log.txt
 	rm -f release/*.o
 	rm -f figure/problemA/*.png
 	rm -f output/problemA/*.txt
@@ -28,3 +36,8 @@ clean:
 	rm -f output/problemD/*.txt
 	rm -f figure/problemE/*.png
 	rm -f output/problemE/*.txt
+	rm -f output/check/*.txt
+	rm -f figure/check/*.png
+
+cleanlog:
+	rm -f logs/*.txt
