@@ -114,6 +114,29 @@ void check_P4(){
 }
 
 
+// Point 5 : BSpline in any order 
+void check_P5(){
+    //随机生成节点序列N=11
+    std::vector<double> t1;
+    for (int i = 1; i <= 11; i++) {
+        t1.push_back(-0.5 + 2.0 * rand() / RAND_MAX);
+    }
+    std::sort(t1.begin(), t1.end()); // 使用 std::sort 进行排序
+
+    std::vector<double> coefficients;
+    for (int i = 1; i <= 14; i++) {
+        coefficients.push_back(-1.0 + 2.0 * rand() / RAND_MAX);
+    }
+    BSpline spline1(1, 4, coefficients, t1);
+    FILE* original_stdout = stdout;
+    freopen("output/check/P5_bspline.txt", "w", stdout);
+    spline1.print();
+    fflush(stdout);
+    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    system("python3 src/Check/plot.py output/check/P5_bspline.txt");
+    stdout = original_stdout;
+}
+
 int main() {
     std::cout << "Checking P1 : PP Spline & BSpline S^0_1" << std::endl;
     check_P1();
@@ -126,6 +149,9 @@ int main() {
     std::cout << "figures are saved in output/check" << std::endl;
     std::cout << "Checking P4 : Check PP Spline & BSpline get the same curve with the same boundary conditions and knots" << std::endl;
     check_P4();
+    std::cout << "figures are saved in output/check" << std::endl;
+    std::cout << "Checking P5 : BSpline in any order" << std::endl;
+    check_P5();
     std::cout << "figures are saved in output/check" << std::endl;
     
     return 0;

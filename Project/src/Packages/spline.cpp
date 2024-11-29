@@ -549,6 +549,39 @@ BSpline::BSpline(int dim, int order, const std::vector<MathFunction>& f, double 
     }
 }
 
+// 通过指定的节点序列和系数向量构造 B 样条
+BSpline::BSpline(int dim, int order, const std::vector<double>& coefficients, const std::vector<double>& time_points) : Spline(dim, order) {
+    if (coefficients.size() != time_points.size() + order - 1) {
+        throw "BSpline: Number of coefficients must equal to number of time points plus order minus one";
+    }
+    if (time_points.size() <= 1) {
+        throw "BSpline: Invalid number of intervals";
+    }
+
+    this->knot_vector.clear();
+    for(int i = order; i >= 1; --i)
+        this->knot_vector.push_back(time_points[0] - i);
+    for(int i = 0; i < time_points.size(); ++i)
+        this->knot_vector.push_back(time_points[i]);
+    for(int i = 1; i <= order; ++i)
+        this->knot_vector.push_back(time_points[time_points.size() - 1] + i);
+
+    int num_points = time_points.size();
+    std::vector<Polynomial> polynomials(num_points - 1);
+
+    for(int i = 0; i < num_points - 1; ++i) {
+        std::vector<double> x_values(order + 1), y_values(order + 1);
+        for(int j = 0; j <= order; ++j) {
+            x_values[j] = time_points[i] + (time_points[i + 1] - time_points[i]) * j / order;
+            y_values[j] = 0;
+            for(int k = 0; k < coefficients.size(); ++k)
+                y_values[j] += coefficients[k] * evaluate_basis(k + 1, order, x_values[j]);
+        }
+        polynomials[i] = Polynomial(x_values, y_values);
+    }
+    this->segments.push_back(PiecewisePolynomial(polynomials, time_points));
+}
+
 ////////////////////////////////////////////////////////////////////
 
 /*其他辅助函数*/

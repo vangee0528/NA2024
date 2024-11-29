@@ -184,6 +184,9 @@ public:
                                  const std::string& method = "uniform"
                                  );
 
+    // 通过指定的节点序列和系数向量构造 任意阶 B 样条
+    BSpline(int dim, int order, const std::vector<double>& coefficients, const std::vector<double>& time_points);
+
     virtual ~BSpline() {}
 };
 
