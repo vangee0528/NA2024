@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cmath>
 #include "lapack.h"
+#include "json.h"
 
 
 /* 函数类 */
@@ -138,6 +139,8 @@ public:
                                const std::string& method = "uniform" // 默认均匀节点
                                ); 
 
+    // 通过 JSON 文件构造 PP 样条
+    PPSpline(const std::string& json_file_path, const std::vector<MathFunction>& functions);
 
     virtual ~PPSpline() {}
 };
@@ -187,6 +190,9 @@ public:
     // 通过指定的节点序列和系数向量构造 任意阶 B 样条
     BSpline(int dim, int order, const std::vector<double>& coefficients, const std::vector<double>& time_points);
 
+    // 通过 JSON 文件构造 B 样条
+    BSpline(const std::string& json_file_path, const std::vector<MathFunction>& functions);
+
     virtual ~BSpline() {}
 };
 
@@ -194,8 +200,11 @@ public:
 /* 其他辅助函数 */
 // 计算累积弦长
 std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vector<double>> &points);
+
 // 根据累积弦长等比例选取分点
 std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_points);
 
+// 将边界条件字符串转换为枚举类型
+SplineBoundaryCondition get_boundary_condition(const std::string& boundary_condition_str);
 
 #endif // _SPLINE_H_

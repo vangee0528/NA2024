@@ -356,7 +356,25 @@ PPSpline::PPSpline(int dim, int order, const std::vector<MathFunction>& f, doubl
 
 }
 
+// 通过 JSON 文件和函数数组构造 PP 样条
+PPSpline::PPSpline(const std::string& json_file_path, const std::vector<MathFunction>& functions) : Spline(0, 0) {
+    SplineParameters params = read_json(json_file_path);
+    if (params.spline_type != "PPSpline") {
+        throw std::invalid_argument("无效的样条类型用于 PPSpline");
+    }
+    // 转换边界条件
+    SplineBoundaryCondition bc = get_boundary_condition(params.boundary_condition);
 
+    if (params.method == "uniform" || params.method == "chordal") {
+        // 使用均匀选点法或累积弦长法构造 PP 样条
+        *this = PPSpline(params.dimension, params.order, functions, params.interval[0], params.interval[1], params.num_intervals, bc, params.da, params.db, params.method);
+    } else if (params.method == "custom" ) {
+        // 使用自定义选点法或特殊选点法构造 PP 样条
+        *this = PPSpline(params.dimension, params.order, functions, params.time_points, bc, params.da, params.db);
+    } else {
+        throw std::invalid_argument("无效的选点方法: " + params.method);
+    }
+}
 ////////////////////////////////////////////////////////////////////
 
 /* BSpline 类 */
@@ -582,10 +600,32 @@ BSpline::BSpline(int dim, int order, const std::vector<double>& coefficients, co
     this->segments.push_back(PiecewisePolynomial(polynomials, time_points));
 }
 
+
+// 通过 JSON 文件和函数数组构造 B 样条
+BSpline::BSpline(const std::string& json_file_path, const std::vector<MathFunction>& functions) : Spline(0, 0) {
+    SplineParameters params = read_json(json_file_path);
+    if (params.spline_type != "BSpline") {
+        throw std::invalid_argument("无效的样条类型用于 BSpline");
+    }
+    // 转换边界条件
+    SplineBoundaryCondition bc = get_boundary_condition(params.boundary_condition);
+
+    if (params.method == "uniform" || params.method == "chord") {
+        // 使用均匀选点法或累积弦长法构造 B 样条
+        *this = BSpline(params.dimension, params.order, functions, params.interval[0], params.interval[1], params.num_intervals, bc, params.da, params.db, params.method);
+    } else if (params.method == "special") {
+        // 使用特殊选点法构造 B 样条
+        *this = BSpline(params.dimension, params.order, params.coefficients, params.time_points);
+    } else if (params.method == "custom") {
+        // 使用自定义选点法构造 B 样条
+        *this = BSpline(params.dimension, params.order, functions, params.time_points, bc, params.da, params.db);
+    } else {
+        throw std::invalid_argument("无效的选点方法: " + params.method);
+    }
+}
 ////////////////////////////////////////////////////////////////////
 
 /*其他辅助函数*/
-
 
 // 计算累积弦长
 std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vector<double>> &points) {
@@ -603,21 +643,39 @@ std::vector<double> compute_cumulative_chordal_length(const std::vector<std::vec
     return time_points;
 }
 
-// 根据累积弦长等比例选取分点
-std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_points) {
-    double total_length = cumulative_lengths.back();
-    std::vector<double> selected_points(num_points);
-    
-    for(int i = 0; i < num_points; ++i) {
-        double target_length = total_length * i / (num_points - 1);
-        for(int j = 1; j < cumulative_lengths.size(); ++j) {
-            if (cumulative_lengths[j] >= target_length) {
-                double t = (target_length - cumulative_lengths[j - 1]) / (cumulative_lengths[j] - cumulative_lengths[j - 1]);
-                selected_points[i] = function_values[j - 1] + t * (function_values[j] - function_values[j - 1]);
-                break;
-            }
+// 将边界条件字符串转换为枚举类型
+SplineBoundaryCondition get_boundary_condition(const std::string& boundary_condition_str) {
+    if (boundary_condition_str == "NATURAL_SPLINE") {
+        return NATURAL_SPLINE;
+    } else if (boundary_condition_str == "CLAMPED") {
+        return CLAMPED;
+    } else if (boundary_condition_str == "SECOND_DERIVATIVE_FIXED") {
+        return SECOND_DERIVATIVE_FIXED;
+    } else if (boundary_condition_str == "NOT_A_KNOT_CONDITION") {
+        return NOT_A_KNOT_CONDITION;
+    } else if (boundary_condition_str == "PERIODIC_CONDITION") {
+        return PERIODIC_CONDITION;
+    } else {
+        throw std::invalid_argument("Invalid boundary condition");
+    }
+}
+
+// 选择节点
+std::vector<double> select_points(const std::vector<double> &function_values, const std::vector<double> &cumulative_lengths, int num_intervals) {
+    std::vector<double> selected_points(num_intervals);
+    for(int i = 0; i < num_intervals; ++i) {
+        double target_length = cumulative_lengths.back() * i / (num_intervals - 1);
+        int j = 0;
+        while (cumulative_lengths[j] < target_length)
+            ++j;
+        if (j == 0)
+            selected_points[i] = function_values[0];
+        else if (j == cumulative_lengths.size())
+            selected_points[i] = function_values.back();
+        else {
+            double ratio = (target_length - cumulative_lengths[j - 1]) / (cumulative_lengths[j] - cumulative_lengths[j - 1]);
+            selected_points[i] = function_values[j - 1] + ratio * (function_values[j] - function_values[j - 1]);
         }
     }
     return selected_points;
 }
-
