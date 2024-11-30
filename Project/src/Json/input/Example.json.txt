@@ -2,7 +2,7 @@
     "spline_type": "BSpline",                       // 样条类型，可以是 "BSpline" 或 "PPSpline"
     "dimension": 2,                                 // 空间维度，需要拟合的变量数量，1 可以表示 y=f(x) 的情况， 2 可以表示  x = x(t), y = y(t) 的情况, 以此类推
     "order": 3,                                     // 阶数k
-    "method": "uniform",                               // 选点方式，包括均匀(uniform),累积弦长(chordal),自定义选点(custom)，特殊(special)
+    "method": "uniform",                            // 选点方式，包括均匀(uniform),累积弦长(chordal),自定义选点(custom)，特殊(special)
     "interval": [-1, 1],                            // 选点方式为“均匀”或者“累积弦长”时填写
     "num_interval":10,                              // 选点方式为“均匀”或者“累积弦长”时填写
     "time_points": [0, 1, 2, 3, 4],                 // 节点序列（选点方式为“自定义”或者“特殊”时填写）
