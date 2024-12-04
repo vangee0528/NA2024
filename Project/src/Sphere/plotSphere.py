@@ -108,8 +108,8 @@ def plot_spherical_points(original_points, spherical_points, output_file):
     plt.close()
 
 def main():
-    input_file = 'output/problemF/output.txt'
-    output_dir = 'figure/problemF'
+    input_file = 'output/Sphere/output.txt'
+    output_dir = 'figure/Sphere'
     os.makedirs(output_dir, exist_ok=True)
     
     original_points, plane_points, plane_spline_points, spherical_points = read_points(input_file)

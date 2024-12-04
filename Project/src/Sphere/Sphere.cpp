@@ -7,8 +7,8 @@ int main(){
     // 在球面x^2+y^2+(z-1)^2=1上随机选取10个点
     try{
     std::vector<std::vector<double>> spherical_points(3);
-    system("mkdir -p output/problemF");
-    freopen("output/problemF/output.txt","w",stdout);
+    system("mkdir -p output/Sphere");
+    freopen("output/Sphere/output.txt","w",stdout);
     for (int i = 0; i < 10; ++i) {
         double theta = 2 * M_PI * rand() / RAND_MAX;
         double phi = M_PI * rand() / RAND_MAX;

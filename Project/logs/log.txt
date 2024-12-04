@@ -44,3 +44,4 @@ Make Time: Wed Dec  4 21:14:53 CST 2024
 2024/12/04 21:15:19 : Successfully saved ./figure/check/P5_bspline.png
 2024/12/04 21:15:21 : Successfully saved figure/jsontest/output_bspline.png
 2024/12/04 21:15:21 : Successfully saved figure/jsontest/output_ppspline.png
+Clean Time: Wed Dec  4 21:42:35 CST 2024
