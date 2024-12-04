@@ -20,6 +20,9 @@ all:
 	g++ src/ProblemE/ProblemE.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/ProblemE.o -llapack -lblas
 	release/ProblemE.o
 	python3 src/ProblemE/plotE.py
+	g++ src/ProblemF/ProblemF.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/ProblemF.o -llapack -lblas
+	release/ProblemF.o
+	python3 src/ProblemF/plotF.py
 	g++ src/Check/check.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/check.o -llapack -lblas
 	release/check.o
 	g++ src/Json/test.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/test.o -llapack -lblas
@@ -39,6 +42,8 @@ clean:
 	rm -f output/problemD/*.txt
 	rm -f figure/problemE/*.png
 	rm -f output/problemE/*.txt
+	rm -f figure/problemF/*.png
+	rm -f output/problemF/*.txt
 	rm -f output/check/*.txt
 	rm -f figure/check/*.png
 	rm -f figure/jsontest/*.png

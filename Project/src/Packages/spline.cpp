@@ -190,8 +190,8 @@ PiecewisePolynomial PPSpline::compute_spline_segments(SplineBoundaryCondition bc
         return PiecewisePolynomial(polynomials, t);
     } else {
         if (bc == NO_CONDITION)
-            throw "PPSpline : Boundary condition must be given";
-
+            // throw "PPSpline : Boundary condition must be given";
+            bc = NATURAL_SPLINE;
         // 三次样条函数S^2_3
         std::vector<double> first_divided_diff(num_points - 1);  
         for(int i = 0; i < num_points - 1; ++i)
@@ -355,7 +355,17 @@ PPSpline::PPSpline(int dim, int order, const std::vector<MathFunction>& f, doubl
 
 
 }
+// 通过二维散点构造PP样条
+PPSpline::PPSpline(int dim, int order, const std::vector<std::vector<double>>& points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
+    // Points[0] 是 x 坐标，Points[1] 是 y 坐标
+    if (points.size() != 2) {
+        std::cout<<points.size()<<std::endl;    
+        throw "PPSpline: Dimension mismatch";
+    }
 
+    this -> segments.push_back(compute_spline_segments(bc, points[1], points[0], da, db));
+
+}
 // 通过 JSON 文件和函数数组构造 PP 样条
 PPSpline::PPSpline(const std::string& json_file_path, const std::vector<MathFunction>& functions) : Spline(0, 0) {
     SplineParameters params = read_json(json_file_path);
@@ -504,6 +514,7 @@ PiecewisePolynomial BSpline::compute_spline_segments(SplineBoundaryCondition bc,
     return PiecewisePolynomial(polynomials, time_points);
 }
 
+
 // 通过指定的不均匀节点构造 B 样条
 BSpline::BSpline(int dim, int order, const std::vector<MathFunction>& f, const std::vector<double>& time_points, SplineBoundaryCondition bc, double da, double db) : Spline(dim, order) {
     if (f.size() != dim) {
@@ -625,6 +636,74 @@ BSpline::BSpline(const std::string& json_file_path, const std::vector<MathFuncti
 }
 ////////////////////////////////////////////////////////////////////
 
+/*SplineOnSphere 类*/
+
+// 通过指定的不均匀节点构造球面样条
+SplineOnSphere::SplineOnSphere(const std::vector<std::vector<double>>& original_points, int order, SplineBoundaryCondition bc, double da, double db) { 
+    this -> original_points = original_points;
+    if (original_points[0].size() != original_points[1].size() || original_points[0].size() != original_points[2].size()) {
+        throw "SplineOnSphere: Size mismatch";
+    }
+    std::vector<std::vector<double>> cartesian_points(2, std::vector<double>(original_points[0].size()));
+    for (int i = 0; i < original_points[0].size(); ++i) {
+        std::vector<double> cartesian = spherical_to_cartesian({original_points[0][i], original_points[1][i], original_points[2][i]});
+        cartesian_points[0][i] = cartesian[0];
+        cartesian_points[1][i] = cartesian[1];
+    }
+    // 按照将平面点按照x坐标排序
+    std::vector<std::vector<double>> tmp;
+    for (int i = 0; i< cartesian_points[0].size(); ++i){
+        tmp.push_back({cartesian_points[0][i],cartesian_points[1][i]});
+    }
+    std::sort(tmp.begin(),tmp.end(),[](std::vector<double> a,std::vector<double> b){return a[0]<b[0];});
+    for (int i = 0; i< cartesian_points[0].size(); ++i){
+        cartesian_points[0][i] = tmp[i][0];
+        cartesian_points[1][i] = tmp[i][1];
+    }
+    this ->plane_points = cartesian_points;
+
+    this -> spline_on_plane = PPSpline(1,3,cartesian_points, bc, da, db);
+    double x_start = cartesian_points[0][0];
+    double x_end = cartesian_points[0][cartesian_points[0].size() - 1];
+
+    std::vector<double> spherical;
+    for (int i = 0; i <=100;++i){
+        // 计算平面上的点
+        double x = x_start + i * (x_end - x_start) / 100;
+        double y = (this -> spline_on_plane)(x)[0];
+        this -> plane_spline_points[0].push_back(x);
+        this -> plane_spline_points[1].push_back(y);
+        // 转化成球面上的点
+        std::vector<double> spherical = cartesian_to_spherical({x,y});
+        this -> spherical_points[0].push_back(spherical[0]);
+        this -> spherical_points[1].push_back(spherical[1]);
+        this -> spherical_points[2].push_back(spherical[2]);
+    }
+    
+}
+
+void::SplineOnSphere::print() const{
+    std::cout<<"original_points: "<<std::endl;
+    for (int i = 0; i< original_points[0].size(); ++i){
+        std::cout<<original_points[0][i]<<","<<original_points[1][i]<<","<<original_points[2][i]<<std::endl;
+    }
+    std::cout<<"plane_points: "<<std::endl;
+    for (int i = 0; i< plane_points[0].size(); ++i){
+        std::cout<<plane_points[0][i]<<","<<plane_points[1][i]<<",0"<<std::endl;
+    }
+    std::cout<<"plane_spline: "<<std::endl;
+    for (int i = 0; i< plane_spline_points[0].size(); ++i){
+        std::cout<<plane_spline_points[0][i]<<","<<plane_spline_points[1][i]<<",0"<<std::endl;
+    }
+    std::cout<<"spherical_points: "<<std::endl;
+    for (int i = 0; i< spherical_points[0].size(); ++i){
+        std::cout<<spherical_points[0][i]<<","<<spherical_points[1][i]<<","<<spherical_points[2][i]<<std::endl;
+    }
+}
+
+
+
+
 /*其他辅助函数*/
 
 // 计算累积弦长
@@ -678,4 +757,27 @@ std::vector<double> select_points(const std::vector<double> &function_values, co
         }
     }
     return selected_points;
+}
+
+// 从球面坐标转换为平面坐标 ,球面上的点P=(x,y,z) 满足 x^2 + y^2 + (z-1)^2 = 1； 连接北极点N = (0,0,2) 和点P 的直线与平面z=0 的交点为点Q=(a,b,0) ，则点P 的平面坐标为(a,b) 
+std::vector<double> spherical_to_cartesian(const std::vector<double> &spherical) {
+    if (spherical.size() != 3) {
+        throw "Spherical to Cartesian: Dimension must be 3";
+    }
+    double x = 2 * spherical[0] / (2 - spherical[2]);
+    double y = 2 * spherical[1] / (2 - spherical[2]);
+    return {x, y};
+}
+
+// 从平面坐标转换为球面坐标
+std::vector<double> cartesian_to_spherical(const std::vector<double> &cartesian) {
+    if (cartesian.size() != 2) {
+        throw "Cartesian to Spherical: Dimension must be 2";
+    }
+    double x = cartesian[0], y = cartesian[1];
+    double k = 4/(4 + x*x + y*y);
+    double x_s = k*x;
+    double y_s = k*y;
+    double z_s = 2-2*k;
+    return {x_s, y_s, z_s};
 }

@@ -4,6 +4,7 @@
 #include <ctime>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include "lapack.h"
 #include "json.h"
@@ -142,6 +143,11 @@ public:
     // 通过 JSON 文件构造 PP 样条
     PPSpline(const std::string& json_file_path, const std::vector<MathFunction>& functions);
 
+    // 任意维数 通过给定的点构造 PP 样条
+    PPSpline(int dim, int order, const std::vector<std::vector<double>>& points,
+                                                         SplineBoundaryCondition bc = CLAMPED,
+                                                         double da = 0.0, 
+                                                         double db = 0.0 );
     virtual ~PPSpline() {}
 };
 
@@ -193,7 +199,23 @@ public:
     // 通过 JSON 文件构造 B 样条
     BSpline(const std::string& json_file_path, const std::vector<MathFunction>& functions);
 
+    
     virtual ~BSpline() {}
+};
+
+// 球面上的样条
+class SplineOnSphere {
+private:
+    PPSpline spline_on_plane = PPSpline(1, 3, {{0, 0, 0}, {0, 0, 0}}, NO_CONDITION, 0, 0);
+    std::vector<std::vector<double>> original_points = {{},{},{}};  // 原始球面坐标
+    std::vector<std::vector<double>> plane_points = {{},{}};        // 映射到平面上的坐标
+    std::vector<std::vector<double>> plane_spline_points = {{},{}}; // 使用平面坐标构造的样条上的采样点
+    std::vector<std::vector<double>> spherical_points = {{},{},{}}; // 采样点映射回球面上的坐标
+
+public:
+    SplineOnSphere(const std::vector<std::vector<double>>& original_points, int order,SplineBoundaryCondition bc, double da, double db);
+    void print() const;
+
 };
 
 
@@ -206,5 +228,11 @@ std::vector<double> select_points(const std::vector<double> &function_values, co
 
 // 将边界条件字符串转换为枚举类型
 SplineBoundaryCondition get_boundary_condition(const std::string& boundary_condition_str);
+
+// 将球面坐标转换为笛卡尔坐标
+std::vector<double> spherical_to_cartesian(const std::vector<double>& spherical);
+
+// 将笛卡尔坐标转换为球面坐标
+std::vector<double> cartesian_to_spherical(const std::vector<double>& cartesian);
 
 #endif // _SPLINE_H_
