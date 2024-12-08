@@ -1,0 +1,47 @@
+Make Time: Wed Dec  4 21:14:53 CST 2024
+2024/12/04 21:14:56 : Successfully saved ./figure/problemA/N_6.png
+2024/12/04 21:14:56 : Successfully saved ./figure/problemA/N_11.png
+2024/12/04 21:14:56 : Successfully saved ./figure/problemA/N_21.png
+2024/12/04 21:14:56 : Successfully saved ./figure/problemA/N_41.png
+2024/12/04 21:14:56 : Successfully saved ./figure/problemA/N_81.png
+2024/12/04 21:14:59 : Reading data from ./output/problemB/cubic.txt
+2024/12/04 21:14:59 : Plotting data and saving to ./figure/problemB/cubic.png
+2024/12/04 21:14:59 : Successfully saved ./figure/problemB/cubic.png
+2024/12/04 21:14:59 : Reading data from ./output/problemB/quadratic.txt
+2024/12/04 21:14:59 : Plotting data and saving to ./figure/problemB/quadratic.png
+2024/12/04 21:14:59 : Successfully saved ./figure/problemB/quadratic.png
+2024/12/04 21:15:01 : Successfully saved ./figure/problemC/s23.png
+2024/12/04 21:15:01 : Successfully saved ./figure/problemC/s12.png
+2024/12/04 21:15:03 : Successfully saved ./figure/problemD/s23.png
+2024/12/04 21:15:03 : Successfully saved ./figure/problemD/s12.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r1_unit_N10.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r1_chord_N10.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r1_unit_N40.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r1_chord_N40.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r1_unit_N160.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r1_chord_N160.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r2_unit_N10.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r2_chord_N10.png
+2024/12/04 21:15:06 : Successfully savedfigure/problemE/r2_unit_N40.png
+2024/12/04 21:15:07 : Successfully savedfigure/problemE/r2_chord_N40.png
+2024/12/04 21:15:07 : Successfully savedfigure/problemE/r2_unit_N160.png
+2024/12/04 21:15:07 : Successfully savedfigure/problemE/r2_chord_N160.png
+2024/12/04 21:15:07 : Successfully savedfigure/problemE/r3_unit_N10.png
+2024/12/04 21:15:07 : Successfully savedfigure/problemE/r3_chord_N10.png
+2024/12/04 21:15:07 : Successfully savedfigure/problemE/r3_unit_N40.png
+2024/12/04 21:15:07 : Successfully savedfigure/problemE/r3_chord_N40.png
+2024/12/04 21:15:08 : Successfully savedfigure/problemE/r3_unit_N160.png
+2024/12/04 21:15:08 : Successfully savedfigure/problemE/r3_chord_N160.png
+2024/12/04 21:15:13 : Successfully saved ./figure/check/P1_ppspline.png
+2024/12/04 21:15:15 : Successfully saved ./figure/check/P1_bspline.png
+2024/12/04 21:15:15 : Successfully saved ./figure/check/P2_s23_natural.png
+2024/12/04 21:15:16 : Successfully saved ./figure/check/P2_s23_clamped.png
+2024/12/04 21:15:16 : Successfully saved ./figure/check/P2_s23_periodic.png
+2024/12/04 21:15:17 : Successfully saved ./figure/check/P3_s23_natural.png
+2024/12/04 21:15:17 : Successfully saved ./figure/check/P3_s23_clamped.png
+2024/12/04 21:15:18 : Successfully saved ./figure/check/P3_s23_periodic.png
+2024/12/04 21:15:18 : Successfully saved figure/check/P4_compare.png
+2024/12/04 21:15:19 : Successfully saved ./figure/check/P5_bspline.png
+2024/12/04 21:15:21 : Successfully saved figure/jsontest/output_bspline.png
+2024/12/04 21:15:21 : Successfully saved figure/jsontest/output_ppspline.png
+Clean Time: Wed Dec  4 21:42:35 CST 2024

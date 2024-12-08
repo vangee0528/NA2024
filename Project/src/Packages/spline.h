@@ -54,7 +54,7 @@ public:
 
 
 /* 分段多项式类 */
-class PiecewisePolynomial : public MathFunction {
+class PiecewisePolynomial {
 private:
     std::vector<double> points;       // 各分段的起点
     std::vector<Polynomial> polynomials;   // 各分段的多项式
@@ -90,7 +90,7 @@ enum SplineBoundaryCondition {
 
 
 /* 样条曲线基类 */
-class Spline{
+class Spline {
 private:
     // 计算样条各段多项式
     virtual PiecewisePolynomial compute_spline_segments(SplineBoundaryCondition condition, 
