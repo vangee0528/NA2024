@@ -389,7 +389,7 @@ PPSpline::PPSpline(const std::string& json_file_path, const std::vector<MathFunc
 
 /* BSpline 类 */
 
-// 计算 B 样条基函数 B_i^k 的值
+// 计算 B 样条基函数 B_i^k 在x处的值
 double BSpline :: evaluate_basis (int i, int k, double x) const {
     if (!k)
         return knot_vector[i - 1] < x && x <= knot_vector[i];

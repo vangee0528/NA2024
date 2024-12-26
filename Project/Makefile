@@ -21,8 +21,8 @@ all:
 	g++ src/Sphere/Sphere.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/Sphere.o -llapack -lblas
 	release/Sphere.o
 	python3 src/Sphere/plotSphere.py
-	g++ src/Check/check.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/check.o -llapack -lblas
-	release/check.o
+	g++ main.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/main.o -llapack -lblas
+	release/main.o
 	g++ src/Json/test.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/test.o -llapack -lblas
 	release/test.o
 	python3 src/Json/plot.py
