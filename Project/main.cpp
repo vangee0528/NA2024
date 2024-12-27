@@ -1,4 +1,4 @@
-#include "Packages/spline.h"
+#include "src/Packages/spline.h"
 #include <iostream>
 #include <cstdlib>
 #include <algorithm>
@@ -24,12 +24,12 @@ void check_P1() {
     freopen("output/check/P1_ppspline.txt", "w", stdout);
     ppspline.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
 
     freopen("output/check/P1_bspline.txt", "w", stdout);
     bspline.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
     system("python3 plot.py output/check/P1_ppspline.txt");
     system("python3 plot.py output/check/P1_bspline.txt");
     stdout = original_stdout;
@@ -51,19 +51,19 @@ void check_P2() {
     PPSpline spline1(1, 3, f_v, t1, NATURAL_SPLINE);
     spline1.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
 
     freopen("output/check/P2_s23_clamped.txt", "w", stdout);
     PPSpline spline2(1, 3, f_v, t1, CLAMPED);
     spline2.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
 
     freopen("output/check/P2_s23_periodic.txt", "w", stdout);
     PPSpline spline3(1, 3, f_v, t1, PERIODIC_CONDITION);
     spline3.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
     system("python3 plot.py output/check/P2_s23_natural.txt");
     system("python3 plot.py output/check/P2_s23_clamped.txt");
     system("python3 plot.py output/check/P2_s23_periodic.txt");
@@ -78,7 +78,7 @@ void check_P3() {
     for (int i = 1; i <= 11; i++) {
         t1.push_back(-1 + 2.0 * rand() / RAND_MAX);
     }
-    std::sort(t1.begin(), t1.end()); // 使用 std::sort 进行排序
+    std::sort(t1.begin(), t1.end()); 
     
     FILE* original_stdout = stdout;
 
@@ -86,19 +86,19 @@ void check_P3() {
     BSpline spline1(1, 3, {f_v}, t1, NATURAL_SPLINE);
     spline1.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
 
     freopen("output/check/P3_s23_clamped.txt", "w", stdout);
     BSpline spline2(1, 3, f_v, t1, CLAMPED);
     spline2.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
 
     freopen("output/check/P3_s23_periodic.txt", "w", stdout);
     BSpline spline3(1, 3, f_v, t1, PERIODIC_CONDITION);
     spline3.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
     system("python3 plot.py output/check/P3_s23_natural.txt");
     system("python3 plot.py output/check/P3_s23_clamped.txt");
     system("python3 plot.py output/check/P3_s23_periodic.txt");
@@ -119,40 +119,44 @@ void check_P5(){
     //随机生成节点序列N=11
     std::vector<double> t1;
     for (int i = 1; i <= 11; i++) {
-        t1.push_back(-0.5 + 2.0 * rand() / RAND_MAX);
+        t1.push_back(-10.0 + 20.0 * rand() / RAND_MAX);
+        
     }
-    std::sort(t1.begin(), t1.end()); // 使用 std::sort 进行排序
-
+    std::sort(t1.begin(), t1.end()); 
+    // for (int i = 0; i < t1.size();i++){
+    //     std::cout << t1[i] << ",";
+    // }
     std::vector<double> coefficients;
     for (int i = 1; i <= 14; i++) {
         coefficients.push_back(-1.0 + 2.0 * rand() / RAND_MAX);
+
     }
     BSpline spline1(1, 4, coefficients, t1);
     FILE* original_stdout = stdout;
     freopen("output/check/P5_bspline.txt", "w", stdout);
     spline1.print();
     fflush(stdout);
-    freopen("/dev/tty", "a", stdout); // 恢复标准输出
+    freopen("/dev/tty", "a", stdout); 
     system("python3 plot.py output/check/P5_bspline.txt");
     stdout = original_stdout;
 }
 
 int main() {
-    std::cout << "Checking P1 : PP Spline & BSpline S^0_1" << std::endl;
+    // std::cout << "Checking P1 : PP Spline & BSpline S^0_1" << std::endl;
     check_P1();
-    std::cout << "figures are saved in output/check" << std::endl;
-    std::cout << "Checking P2 : S^2_3 SPLINE OF PP-Form with 3 different boundary conditions" << std::endl;
+    // std::cout << "figures are saved in output/check" << std::endl;
+    // std::cout << "Checking P2 : S^2_3 SPLINE OF PP-Form with 3 different boundary conditions" << std::endl;
     check_P2();
-    std::cout << "figures are saved in output/check" << std::endl;
-    std::cout << "Checking P3 : S^2_3 SPLINE OF B-Form with 3 different boundary conditions" << std::endl;
+    // std::cout << "figures are saved in output/check" << std::endl;
+    // std::cout << "Checking P3 : S^2_3 SPLINE OF B-Form with 3 different boundary conditions" << std::endl;
     check_P3();
-    std::cout << "figures are saved in output/check" << std::endl;
-    std::cout << "Checking P4 : Check PP Spline & BSpline get the same curve with the same boundary conditions and knots" << std::endl;
+    // std::cout << "figures are saved in output/check" << std::endl;
+    // std::cout << "Checking P4 : Check PP Spline & BSpline get the same curve with the same boundary conditions and knots" << std::endl;
     check_P4();
-    std::cout << "figures are saved in output/check" << std::endl;
-    std::cout << "Checking P5 : BSpline in any order" << std::endl;
+    // std::cout << "figures are saved in output/check" << std::endl;
+    // std::cout << "Checking P5 : BSpline in any order" << std::endl;
     check_P5();
-    std::cout << "figures are saved in output/check" << std::endl;
+    std::cout << "Finished checking! Figures are saved in output/check" << std::endl;
     
     return 0;
 }

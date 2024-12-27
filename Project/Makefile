@@ -26,6 +26,10 @@ all:
 	g++ src/Json/test.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/test.o -llapack -lblas
 	release/test.o
 	python3 src/Json/plot.py
+	g++ src/test/main.cpp src/Packages/spline.cpp src/Packages/lapack.cpp src/Packages/json.cpp -o release/test1.o -llapack -lblas
+	release/test1.o
+	python3 src/test/plot.py
+	pdflatex -output-directory=docs docs/report.tex
 clean:
 # 向logs/log.txt中输出当前时间
 	echo "Clean Time: `date`" >> logs/log.txt
@@ -46,6 +50,8 @@ clean:
 	rm -f figure/check/*.png
 	rm -f figure/jsontest/*.png
 	rm -f output/jsontest/*.txt
+	rm -f output/test/*.txt
+	rm -f figure/test/*.png
 
 cleanlog:
 	rm -f logs/*.txt

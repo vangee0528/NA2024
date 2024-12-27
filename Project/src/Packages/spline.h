@@ -166,6 +166,9 @@ private:
     // 计算 B 样条基函数 B_i^k 的值
     double evaluate_basis(int i, int k, double x) const;
 
+
+    std::vector<std::vector<double>> evaluate_basis_coefficients(int i, int k) const;
+
     // 计算 B 样条基函数 B_i^k 的导数
     double evaluate_basis_derivative(int i, int k, double x) const;
 
